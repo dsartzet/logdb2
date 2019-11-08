@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="/fragments/header :: header-css"></div>
+</head>
+<body>
+<div th:replace="/fragments/header :: header"></div>
+<div class="container">
+    <div class="jumbotron">
+        <h1 th:text="${client.firstName} + '\'s Movies'">Clientname Movies</h1>
+    </div>
+    <div class="btn-group" role="group" aria-label="Order by">
+        <a th:href="@{'/movies/' + ${client.id}(sortBy='createdAt', direction='asc')}"><button type="button" class="btn btn-secondary">Date-Ascending</button></a>
+        <a th:href="@{'/movies/' + ${client.id}( sortBy='likeCount', direction='asc')}"><button type="button" class="btn btn-secondary" >Likes-Ascending</button></a>
+        <a th:href="@{'/movies/' + ${client.id}( sortBy='dislikeCount', direction='asc')}"><button type="button" class="btn btn-secondary">Dislikes-Ascending</button></a>
+        <a th:href="@{'/movies/' + ${client.id}( sortBy='createdAt', direction='desc')}"><button type="button" class="btn btn-secondary">Date-Descending</button></a>
+        <a th:href="@{'/movies/' + ${client.id}( sortBy='likeCount', direction='desc')}"><button type="button" class="btn btn-secondary" >Likes-Descending</button></a>
+        <a th:href="@{'/movies/' + ${client.id}( sortBy='dislikeCount', direction='desc')}"><button type="button" class="btn btn-secondary">Dislikes-Descending</button></a>
+    </div>
+    <div th:replace="/fragments/objects :: objects"></div>
+    <div th:replace="/fragments/pagination :: pagination(URLparameter='/movies/' + ${client.id}+${urlExtention})"></div>
+</div>
+<div th:replace="/fragments/footer :: footer"></div>
+</body>
+</html>
