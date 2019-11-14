@@ -2,7 +2,7 @@ package com.logdb.dto;
 
 import java.util.List;
 
-public class TransactionDto {
+public class DataxceiverDto {
 
     private Long id;
     private String sourceIp;

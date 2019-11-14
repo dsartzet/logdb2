@@ -15,7 +15,7 @@ public class BlockMapperImpl implements BlockMapper {
         }
         Block block = new Block();
         block.setId(blockDto.getId());
-        block.setSize(blockDto.getSize());
+//        block.setSize(blockDto.getSize());
         return block;
     }
 
@@ -26,7 +26,7 @@ public class BlockMapperImpl implements BlockMapper {
         }
         BlockDto blockDto = new BlockDto();
         blockDto.setId(block.getId());
-        blockDto.setSize(block.getSize());
+//        blockDto.setSize(block.getSize());
         return blockDto;
     }
 }

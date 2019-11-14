@@ -1,9 +1,9 @@
-package com.logdb.dao;
+package com.logdb.repository;
 
 import com.logdb.entity.Client;
 import org.springframework.data.repository.CrudRepository;
 
-public interface ClientDao extends CrudRepository<Client, Long> {
+public interface ClientRepository extends CrudRepository<Client, Long> {
 
     Client findAllById(long clientId);
     Client findAllByEmail(String email);

@@ -2,15 +2,15 @@ package com.logdb.dto;
 
 public class SessionDto {
 
-    private String id;
+    private Long id;
     private String ip;
     private String browser;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

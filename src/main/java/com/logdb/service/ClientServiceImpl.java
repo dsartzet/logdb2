@@ -6,7 +6,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import com.logdb.dao.ClientDao;
+import com.logdb.repository.ClientRepository;
 import com.logdb.dto.RoleDto;
 import com.logdb.dto.ClientDto;
 import com.logdb.mapper.ClientMapper;
@@ -20,25 +20,25 @@ public class ClientServiceImpl implements ClientService {
     protected BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    protected ClientDao clientDao;
+    protected ClientRepository clientRepository;
 
     @Autowired
     protected ClientMapper clientMapper;
 
     @Override
     public ClientDto findAllById(long id) {
-        return clientMapper.convert(clientDao.findAllById(id));
+        return clientMapper.convert(clientRepository.findAllById(id));
     }
 
     @Override
     public ClientDto findAllByEmail(String email) {
-        return clientMapper.convert(clientDao.findAllByEmail(email));
+        return clientMapper.convert(clientRepository.findAllByEmail(email));
     }
 
     @Override
     public ClientDto save(ClientDto clientDto) {
         initializeClientData(clientDto);
-        return clientMapper.convert(clientDao.save(clientMapper.convert(clientDto)));
+        return clientMapper.convert(clientRepository.save(clientMapper.convert(clientDto)));
     }
 
     protected void initializeClientData(ClientDto clientDto) {

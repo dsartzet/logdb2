@@ -2,17 +2,19 @@ package com.logdb.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
 public class Block {
 
     @Id
+    @GeneratedValue
     @Column(name = "ID", unique = true, nullable = false)
     private Long id;
 
-    @Column(name = "SIZE")
-    private Long size;
+    @Column(name = "BLOCK_ID")
+    private String blockId;
 
     public Long getId() {
         return id;
@@ -22,11 +24,11 @@ public class Block {
         this.id = id;
     }
 
-    public Long getSize() {
-        return size;
+    public String getBlockId() {
+        return blockId;
     }
 
-    public void setSize(Long size) {
-        this.size = size;
+    public void setBlockId(String blockId) {
+        this.blockId = blockId;
     }
 }

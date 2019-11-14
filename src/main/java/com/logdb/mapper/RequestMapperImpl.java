@@ -15,7 +15,7 @@ public class RequestMapperImpl implements RequestMapper {
         }
         Request request = new Request();
         request.setId(requestDto.getId());
-        request.setMethod(requestDto.getMethod());
+        request.setHttpMethod(requestDto.getMethod());
         request.setResource(requestDto.getResource());
         return request;
     }
@@ -27,7 +27,7 @@ public class RequestMapperImpl implements RequestMapper {
         }
         RequestDto requestDto = new RequestDto();
         requestDto.setId(request.getId());
-        requestDto.setMethod(request.getMethod());
+        requestDto.setMethod(request.getHttpMethod());
         requestDto.setResource(request.getResource());
         return requestDto;
     }

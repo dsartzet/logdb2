@@ -1,10 +1,10 @@
-package com.logdb.dao;
+package com.logdb.repository;
 
 import com.logdb.entity.Access;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 
-public interface AccessDao extends CrudRepository<Access, Long> {
+public interface AccessRepository extends CrudRepository<Access, Long> {
     Page<Access> findAll(Pageable pageRequest);
 }

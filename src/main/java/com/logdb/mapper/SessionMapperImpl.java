@@ -15,9 +15,9 @@ public class SessionMapperImpl implements SessionMapper {
         }
 
         Session session = new Session();
-        session.setBrowser(sessionDto.getBrowser());
+        session.setUserAgent(sessionDto.getBrowser());
         session.setId(sessionDto.getId());
-        session.setIp(sessionDto.getIp());
+        session.setSourceIp(sessionDto.getIp());
         return session;
     }
 
@@ -28,9 +28,9 @@ public class SessionMapperImpl implements SessionMapper {
         }
 
         SessionDto sessionDto = new SessionDto();
-        sessionDto.setBrowser(session.getBrowser());
+        sessionDto.setBrowser(session.getUserAgent());
         sessionDto.setId(session.getId());
-        sessionDto.setIp(session.getIp());
+        sessionDto.setIp(session.getSourceIp());
         return sessionDto;
     }
 }

@@ -1,21 +1,22 @@
 package com.logdb.entity;
 
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
 public class Response {
 
     @Id
+    @GeneratedValue
     @Column(name = "ID", unique = true, nullable = false)
     private Long id;
 
     @Column(name = "STATUS",  nullable = false)
-    private String status;
+    private Integer status;
 
-    @Column(name = "SIZE",  nullable = false)
+    @Column(name = "SIZE")
     private Long size;
 
     public Long getId() {
@@ -26,11 +27,11 @@ public class Response {
         this.id = id;
     }
 
-    public String getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 

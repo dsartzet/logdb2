@@ -3,43 +3,44 @@ package com.logdb.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
 public class Session {
 
     @Id
+    @GeneratedValue
     @Column(name = "ID", unique = true, nullable = false)
-    private String id;
+    private Long id;
 
-    @Column(name = "IP",  nullable = false)
-    private String ip;
+    @Column(name = "SOURCE_IP", nullable = false)
+    private String sourceIp;
 
-    @Column(name = "BROWSER",  nullable = false)
-    private String browser;
+    @Column(name = "USER_AGENT",  nullable = false, length = 8192)
+    private String userAgent;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getIp() {
-        return ip;
+    public String getSourceIp() {
+        return sourceIp;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setSourceIp(String sourceIp) {
+        this.sourceIp = sourceIp;
     }
 
-    public String getBrowser() {
-        return browser;
+    public String getUserAgent() {
+        return userAgent;
     }
 
-    public void setBrowser(String browser) {
-        this.browser = browser;
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
     }
-
 }

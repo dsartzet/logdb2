@@ -15,7 +15,7 @@ public class DestinationIpMapperImpl implements DestinationIpMapper {
         }
         DestinationIp destinationIp = new DestinationIp();
         destinationIp.setId(destinationIpDto.getId());
-        destinationIp.setIp(destinationIpDto.getIp());
+//        destinationIp.setIp(destinationIpDto.getIp());
         return destinationIp;
     }
 
@@ -26,7 +26,7 @@ public class DestinationIpMapperImpl implements DestinationIpMapper {
         }
         DestinationIpDto destinationIpDto = new DestinationIpDto();
         destinationIpDto.setId(destinationIp.getId());
-        destinationIpDto.setIp(destinationIp.getIp());
+//        destinationIpDto.setIp(destinationIp.getIp());
         return destinationIpDto;
     }
 }
