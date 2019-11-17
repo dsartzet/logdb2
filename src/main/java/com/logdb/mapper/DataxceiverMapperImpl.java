@@ -10,23 +10,19 @@ import java.util.Objects;
 @Component
 public class DataxceiverMapperImpl implements DataxceiverMapper {
 
-    @Autowired
-    protected BlockMapper blockMapper;
-
-    @Autowired
-    protected DestinationIpMapper destinationIpMapper;
-
     @Override
     public Dataxceiver convert(DataxceiverDto dataxceiverDto) {
         if(Objects.isNull(dataxceiverDto)) {
             return null;
         }
         Dataxceiver dataxceiver = new Dataxceiver();
-//        transaction.setBlocks(transactionDto.getBlockDtos().stream().map(blk -> blockMapper.convert(blk)).collect(Collectors.toList()));
         dataxceiver.setId(dataxceiverDto.getId());
-//        transaction.setDestinantionIps(transactionDto.getDestinationIps().stream().map(dips -> destinationIpMapper.convert(dips)).collect(Collectors.toList()));
         dataxceiver.setSourceIp(dataxceiverDto.getSourceIp());
         dataxceiver.setType(dataxceiverDto.getType());
+        dataxceiver.setBlockId(dataxceiverDto.getBlockId());
+        dataxceiver.setDestinationIp(dataxceiverDto.getDestinationIp());
+        dataxceiver.setSize(dataxceiverDto.getSize());
+        dataxceiver.setTimestamp(dataxceiverDto.getTimestamp());
         return dataxceiver;
     }
 
@@ -36,11 +32,13 @@ public class DataxceiverMapperImpl implements DataxceiverMapper {
             return null;
         }
         DataxceiverDto dataxceiverDto = new DataxceiverDto();
-//        transactionDto.setBlockDtos(transaction.getBlocks().stream().map(blk -> blockMapper.convert(blk)).collect(Collectors.toList()));
         dataxceiverDto.setId(dataxceiver.getId());
-//        transactionDto.setDestinationIps(transaction.getDestinantionIps().stream().map(dips -> destinationIpMapper.convert(dips)).collect(Collectors.toList()));
         dataxceiverDto.setSourceIp(dataxceiver.getSourceIp());
         dataxceiverDto.setType(dataxceiver.getType());
+        dataxceiverDto.setBlockId(dataxceiver.getBlockId());
+        dataxceiverDto.setDestinationIp(dataxceiver.getDestinationIp());
+        dataxceiverDto.setSize(dataxceiver.getSize());
+        dataxceiverDto.setTimestamp(dataxceiver.getTimestamp());
         return dataxceiverDto;
     }
 }

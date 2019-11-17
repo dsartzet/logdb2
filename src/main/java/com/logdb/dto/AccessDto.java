@@ -1,23 +1,13 @@
 package com.logdb.dto;
 
-import java.sql.Timestamp;
-
-public class AccessDto
+public class AccessDto extends LogDto
 {
-    private Long id;
     private SessionDto sessionDto;
+    private String referer;
+    private String userId;
     private RequestDto requestDto;
     private ResponseDto responseDto;
-    private Timestamp timestamp;
-    private String referer;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public SessionDto getSessionDto() {
         return sessionDto;
@@ -43,19 +33,19 @@ public class AccessDto
         this.responseDto = responseDto;
     }
 
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public String getReferer() {
         return referer;
     }
 
     public void setReferer(String referer) {
         this.referer = referer;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

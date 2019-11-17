@@ -44,4 +44,9 @@ public class Pager<T>{
         return getPageIndex() < 0 || getPageIndex() > getTotalElements();
     }
 
+    public static int subtractPageByOne(int page){
+        return (page < 1) ? 0 : page - 1;
+    }
+
+
 }

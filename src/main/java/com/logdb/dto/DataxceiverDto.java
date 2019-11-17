@@ -1,22 +1,12 @@
 package com.logdb.dto;
 
-import java.util.List;
 
-public class DataxceiverDto {
+public class DataxceiverDto extends LogDto{
 
-    private Long id;
     private String sourceIp;
-    private List<DestinationIpDto> destinationIps;
-    private List<BlockDto> blockDtos;
-    private String type;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private String destinationIp;
+    private Long blockId;
+    private Long size;
 
     public String getSourceIp() {
         return sourceIp;
@@ -26,27 +16,28 @@ public class DataxceiverDto {
         this.sourceIp = sourceIp;
     }
 
-    public List<DestinationIpDto> getDestinationIps() {
-        return destinationIps;
+    public String getDestinationIp() {
+        return destinationIp;
     }
 
-    public void setDestinationIps(List<DestinationIpDto> destinationIps) {
-        this.destinationIps = destinationIps;
+    public void setDestinationIp(String destinationIp) {
+        this.destinationIp = destinationIp;
     }
 
-    public List<BlockDto> getBlockDtos() {
-        return blockDtos;
+    public Long getBlockId() {
+        return blockId;
     }
 
-    public void setBlockDtos(List<BlockDto> blockDtos) {
-        this.blockDtos = blockDtos;
+    public void setBlockId(Long blockId) {
+        this.blockId = blockId;
     }
 
-    public String getType() {
-        return type;
+    public Long getSize() {
+        return size;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setSize(Long size) {
+        this.size = size;
     }
+
 }

@@ -32,6 +32,8 @@ public class AccessMapperImpl implements AccessMapper{
         access.setSession(sessionMapper.convert(accessDto.getSessionDto()));
         access.setTimestamp(accessDto.getTimestamp());
         access.setReferer(accessDto.getReferer());
+        access.setType(accessDto.getType());
+        access.setUserId(accessDto.getUserId());
         return access;
     }
 
@@ -47,6 +49,8 @@ public class AccessMapperImpl implements AccessMapper{
         accessDto.setSessionDto(sessionMapper.convert(access.getSession()));
         accessDto.setTimestamp(access.getTimestamp());
         accessDto.setReferer(access.getReferer());
+        accessDto.setType(access.getType());
+        accessDto.setUserId(access.getUserId());
         return accessDto;
     }
 }

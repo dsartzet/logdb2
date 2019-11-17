@@ -1,13 +1,6 @@
 package com.logdb.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,19 +25,21 @@ public class Namesystem {
     @Column(name = "SIZE")
     private Long size;
 
-    @ManyToMany
-    @JoinTable(name = "namesystem_block",
-            joinColumns = @JoinColumn(name = "namesystem_id"),
-            inverseJoinColumns = @JoinColumn(name = "block_id")
+    @ElementCollection
+    @CollectionTable(
+            name="BLOCK",
+            joinColumns=@JoinColumn(name="NAMESYSTEM_ID")
     )
-    private List<Block> blockList = new ArrayList<>();
+    @Column(name="BLOCK_ID")
+    private List<Long> blockIds = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(name = "namesystem_destinationIp",
-            joinColumns = @JoinColumn(name = "namesystem_id"),
-            inverseJoinColumns = @JoinColumn(name = "destinationIp_id")
+    @ElementCollection
+    @CollectionTable(
+            name="DESTINATION_IP",
+            joinColumns=@JoinColumn(name="NAMESYSTEM_ID")
     )
-    private List<DestinationIp> destinationIpList = new ArrayList<>();
+    @Column(name="DESTINATION_IP")
+    private List<String> destinationIps = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -86,19 +81,19 @@ public class Namesystem {
         this.size = size;
     }
 
-    public List<Block> getBlockList() {
-        return blockList;
+    public List<Long> getBlockIds() {
+        return blockIds;
     }
 
-    public void setBlockList(List<Block> blockList) {
-        this.blockList = blockList;
+    public void setBlockIds(List<Long> blockIds) {
+        this.blockIds = blockIds;
     }
 
-    public List<DestinationIp> getDestinationIpList() {
-        return destinationIpList;
+    public List<String> getDestinationIps() {
+        return destinationIps;
     }
 
-    public void setDestinationIpList(List<DestinationIp> destinationIpList) {
-        this.destinationIpList = destinationIpList;
+    public void setDestinationIps(List<String> destinationIps) {
+        this.destinationIps = destinationIps;
     }
 }

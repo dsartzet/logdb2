@@ -6,16 +6,8 @@
 <body>
 <div th:replace="/fragments/header :: header"></div>
 <div class="container">
-    <div class="btn-group" role="group" aria-label="Order by">
-        <a th:href="@{'/home/' ( sortBy='createdAt', direction='asc')}"><button type="button" class="btn btn-secondary">Date-Ascending</button></a>
-        <a th:href="@{'/home/' ( sortBy='likeCount', direction='asc')}"><button type="button" class="btn btn-secondary" >Likes-Ascending</button></a>
-        <a th:href="@{'/home/' ( sortBy='dislikeCount', direction='asc')}"><button type="button" class="btn btn-secondary">Dislikes-Ascending</button></a>
-        <a th:href="@{'/home/' ( sortBy='createdAt', direction='desc')}"><button type="button" class="btn btn-secondary">Date-Descending</button></a>
-        <a th:href="@{'/home/' ( sortBy='likeCount', direction='desc')}"><button type="button" class="btn btn-secondary" >Likes-Descending</button></a>
-        <a th:href="@{'/home/' ( sortBy='dislikeCount', direction='desc')}"><button type="button" class="btn btn-secondary">Dislikes-Descending</button></a>
-    </div>
-    <div th:replace="/fragments/logs :: logs"></div>
-    <div th:replace="/fragments/pagination :: pagination(URLparameter='/home'+${urlExtention})"></div>
+    <div th:replace="/fragments/logDtoList :: logDtoList"></div>
+    <div th:replace="/fragments/pagination :: pagination(URLparameter='/home')"></div>
 </div>
 <div th:replace="/fragments/footer :: footer"></div>
 </body>

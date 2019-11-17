@@ -1,7 +1,10 @@
 package com.logdb.service;
 
 import com.logdb.dto.AccessDto;
+import com.logdb.dto.LogDto;
 import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public interface AccessService {
 
@@ -11,5 +14,5 @@ public interface AccessService {
 
     void delete(AccessDto accessDto);
 
-    Page<AccessDto> findAll(int page);
+    List<AccessDto> findAll();
 }

@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Logdb</title>
+    <div th:replace="/fragments/header :: header-css"/>
+</head>
+<body>
+<div th:replace="/fragments/header :: header"/>
+<div class="container">
+    <div class="container">
+        <div class="alert alert-info" th:if="${successMessage}" th:utext="${successMessage}"></div>
+        <div class="row" style="margin-top:20px">
+            <div class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3">
+                <form autocomplete="off" action="#" th:action="@{/create/accesslog}" th:object="${accessLog}" method="post" class="form-horizontal" role="form">
+                    <h2 class="text-center">Create a new access log</h2>
+                    <div class="form-group">
+                        <label th:if="${#fields.hasErrors('session.sourceIp')}" th:errors="*{session.sourceIp}" class="alert alert-danger"></label>
+                        <input type="text" th:field="*{session.sourceIp}" placeholder="Source Ip" class="form-control input-lg"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label th:if="${#fields.hasErrors('session.userAgent')}" th:errors="*{session.userAgent}" class="alert alert-danger"></label>
+                        <input type="text" th:field="*{session.userAgent}" placeholder="User Agent" class="form-control input-lg"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label th:if="${#fields.hasErrors('request.httpMethod')}" th:errors="*{request.httpMethod}" class="alert alert-danger"></label>
+                        <input type="text" th:field="*{request.httpMethod}" placeholder="Http Method" class="form-control input-lg"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label th:if="${#fields.hasErrors('request.resource')}" th:errors="*{request.resource}" class="alert alert-danger"></label>
+                        <input type="text" th:field="*{request.resource}" placeholder="Resource" class="form-control input-lg"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label th:if="${#fields.hasErrors('response.status')}" th:errors="*{response.status}" class="alert alert-danger"></label>
+                        <input type="text" th:field="*{response.status}" placeholder="Status" class="form-control input-lg"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label th:if="${#fields.hasErrors('response.size')}" th:errors="*{response.size}" class="alert alert-danger"></label>
+                        <input type="text" th:field="*{response.size}" placeholder="Response size" class="form-control input-lg"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}" class="alert alert-danger"></label>
+                        <input type="text" th:field="*{userId}" placeholder="User id" class="form-control input-lg"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label th:if="${#fields.hasErrors('type')}" th:errors="*{type}" class="alert alert-danger"></label>
+                        <input type="text" th:field="*{type}" placeholder="Type" class="form-control input-lg"/>
+                    </div>
+
+                    <input type="hidden" th:field="*{id}"/>
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary btn-blockDtos" value="Save"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row" th:if="${accessLog.id}">
+            <div class="col-md-6 col-md-offset-3">
+                <form action="#" th:action="@{'/accesslog/{id}'(id=${accessLog.id})}" th:method="delete"
+                      class="form-horizontal">
+                    <div class="form-group">
+                        <input type="hidden" name="_method" value="delete"/>
+                        <button type="submit" class="btn btn-danger btn-blockDtos" th:text="Delete">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="/fragments/footer :: footer"/>
+</body>
+</html>

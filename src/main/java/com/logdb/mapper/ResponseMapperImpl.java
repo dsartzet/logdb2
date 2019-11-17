@@ -17,7 +17,7 @@ public class ResponseMapperImpl implements ResponseMapper {
         Response response = new Response();
         response.setId(responseDto.getId());
         response.setSize(responseDto.getSize());
-//        response.setStatus(responseDto.getStatus());
+        response.setStatus(responseDto.getStatus());
         return response;
     }
 
@@ -29,7 +29,7 @@ public class ResponseMapperImpl implements ResponseMapper {
         ResponseDto responseDto = new ResponseDto();
         responseDto.setId(response.getId());
         responseDto.setSize(response.getSize());
-//        responseDto.setStatus(response.getStatus());
+        responseDto.setStatus(response.getStatus());
         return responseDto;
     }
 }

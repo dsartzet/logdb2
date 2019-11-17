@@ -1,21 +1,12 @@
 package com.logdb;
 
 import com.logdb.entity.Access;
-import com.logdb.entity.Block;
 import com.logdb.entity.Dataxceiver;
-import com.logdb.entity.DestinationIp;
 import com.logdb.entity.Namesystem;
 import com.logdb.entity.Request;
 import com.logdb.entity.Response;
 import com.logdb.entity.Session;
-import com.logdb.repository.AccessRepository;
-import com.logdb.repository.BlockRepository;
-import com.logdb.repository.DataxceiverRepository;
-import com.logdb.repository.DestinationIpRepository;
-import com.logdb.repository.NamesystemRepository;
-import com.logdb.repository.RequestRepository;
-import com.logdb.repository.ResponseRepository;
-import com.logdb.repository.SessionRepository;
+import com.logdb.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -69,10 +60,6 @@ public class LogDbApplication implements CommandLineRunner {
 	private SessionRepository sessionRepository;
 	@Autowired
 	private DataxceiverRepository dataxceiverRepository;
-	@Autowired
-	private BlockRepository blockRepository;
-	@Autowired
-	private DestinationIpRepository destinationIpRepository;
 	@Autowired
 	private NamesystemRepository namesystemRepository;
 
@@ -163,19 +150,15 @@ public class LogDbApplication implements CommandLineRunner {
 	}
 
 	private void parseHdfsInsertDB() {
-		Map<String, Block> blockMap = new HashMap<>();
-		Map<String, DestinationIp> destinationIpMap = new HashMap<>();
 		List<Dataxceiver> dataxceiverList = new ArrayList<>();
 		List<Namesystem> namesystemList = new ArrayList<>();
-		parseDataXceiver(blockMap, destinationIpMap, dataxceiverList);
-		parseFsNameSystem(blockMap, destinationIpMap, namesystemList);
-		blockRepository.saveAll(blockMap.values());
-		destinationIpRepository.saveAll(destinationIpMap.values());
+		parseDataXceiver(dataxceiverList);
+		parseFsNameSystem(namesystemList);
 		dataxceiverRepository.saveAll(dataxceiverList);
 		namesystemRepository.saveAll(namesystemList);
 	}
 
-	private void parseDataXceiver(Map<String, Block> blockMap, Map<String, DestinationIp> destinationIpMap, List<Dataxceiver> dataxceiverList) {
+	private void parseDataXceiver(List<Dataxceiver> dataxceiverList) {
 		File file = new File(HDFS_DATAXCEIVER_LOG_PATH);
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			String line;
@@ -229,23 +212,13 @@ public class LogDbApplication implements CommandLineRunner {
 				}
 				// timestamp == null means ignored line
 				if (timestamp != null) {
-					if (!blockMap.containsKey(block_id)) {
-						Block block = new Block();
-						block.setBlockId(block_id);
-						blockMap.put(block_id, block);
-					}
-					if (!destinationIpMap.containsKey(destination_ip_port)) {
-						DestinationIp destinationIp = new DestinationIp();
-						destinationIp.setDestinationIp(destination_ip_port);
-						destinationIpMap.put(destination_ip_port, destinationIp);
-					}
 					Dataxceiver dataxceiver = new Dataxceiver();
 					dataxceiver.setTimestamp(toSqlTimestampFromHDFS(timestamp));
 					dataxceiver.setType(type);
 					dataxceiver.setSourceIp(source_ip_port);
 					dataxceiver.setSize(size);
-					dataxceiver.setBlock(blockMap.get(block_id));
-					dataxceiver.setDestinationIp(destinationIpMap.get(destination_ip_port));
+					dataxceiver.setBlockId(Long.parseLong(block_id));
+					dataxceiver.setDestinationIp(destination_ip_port);
 					dataxceiverList.add(dataxceiver);
 				}
 			}
@@ -254,7 +227,7 @@ public class LogDbApplication implements CommandLineRunner {
 		}
 	}
 
-	private void parseFsNameSystem(Map<String, Block> blockMap, Map<String, DestinationIp> destinationIpMap, List<Namesystem> namesystemList) {
+	private void parseFsNameSystem(List<Namesystem> namesystemList) {
 		File file = new File(HDFS_FS_NAMESYSTEM_LOG_PATH);
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			String line;
@@ -303,31 +276,13 @@ public class LogDbApplication implements CommandLineRunner {
 				} else {
 					System.out.println(String.format("Found unmatched line %s in %s", line, file.getName()));
 				}
-				List<Block> blockList = new ArrayList<>();
-				List<DestinationIp> destinationIpList = new ArrayList<>();
-				for (String block_id : block_id_list) {
-					if (!blockMap.containsKey(block_id)) {
-						Block block = new Block();
-						block.setBlockId(block_id);
-						blockMap.put(block_id, block);
-					}
-					blockList.add(blockMap.get(block_id));
-				}
-				for (String destination_ip_port : destination_ip_port_list) {
-					if (!destinationIpMap.containsKey(destination_ip_port)) {
-						DestinationIp destinationIp = new DestinationIp();
-						destinationIp.setDestinationIp(destination_ip_port);
-						destinationIpMap.put(destination_ip_port, destinationIp);
-					}
-					destinationIpList.add(destinationIpMap.get(destination_ip_port));
-				}
 				Namesystem namesystem = new Namesystem();
 				namesystem.setTimestamp(toSqlTimestampFromHDFS(timestamp));
 				namesystem.setType(type);
 				namesystem.setSourceIp(source_ip_port);
 				namesystem.setSize(size);
-				namesystem.setBlockList(blockList);
-				namesystem.setDestinationIpList(destinationIpList);
+				namesystem.setBlockIds(block_id_list.stream().map(Long::parseLong).collect(Collectors.toList()));
+				namesystem.setDestinationIps(destination_ip_port_list);
 				namesystemList.add(namesystem);
 			}
 		} catch (IOException e) {

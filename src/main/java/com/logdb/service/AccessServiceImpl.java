@@ -4,9 +4,10 @@ import com.logdb.repository.AccessRepository;
 import com.logdb.dto.AccessDto;
 import com.logdb.mapper.AccessMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class AccessServiceImpl implements AccessService {
@@ -33,12 +34,8 @@ public class AccessServiceImpl implements AccessService {
     }
 
     @Override
-    public Page<AccessDto> findAll(int page) {
-        return accessRepository.findAll(new PageRequest(subtractPageByOne(page), 5)).map(access -> accessMapper.convert(access));
-    }
-
-    protected int subtractPageByOne(int page){
-        return (page < 1) ? 0 : page - 1;
+    public List<AccessDto> findAll() {
+        return accessRepository.findAll().stream().map(access -> accessMapper.convert(access)).collect(Collectors.toList());
     }
 
 }

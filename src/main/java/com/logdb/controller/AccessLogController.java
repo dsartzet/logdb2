@@ -1,12 +1,9 @@
 package com.logdb.controller;
 
-import java.security.Principal;
-import java.util.Objects;
-
-import javax.validation.Valid;
-
 import com.logdb.dto.AccessDto;
+import com.logdb.dto.ClientDto;
 import com.logdb.service.AccessService;
+import com.logdb.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,21 +11,21 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import com.logdb.dto.ClientDto;
-import com.logdb.service.ClientService;
+
+import javax.validation.Valid;
+import java.security.Principal;
+import java.util.Objects;
 
 @Controller
-public class AccessController {
+public class AccessLogController {
 
     protected static final String ACCESS_FORM = "/accessForm";
     protected static final String ERROR = "/error";
     protected static final String CREATE_ACCESS = "/create/access";
     protected static final String ACCESS = "access";
     protected static final String REDIRECT_ACCESSS = "redirect:/accesss/";
-    protected static final String FORBIDDEN = "/403";
     protected static final String EDIT_ACCESS_ID = "/edit/access/{id}";
     protected static final String ACCESS_ID = "/access/{id}";
-    protected static final String EMAIL = "email";
     protected static final String REDIRECT_HOME = "redirect:/home";
     protected static final String ACCESS_PAGE = "/access";
 
@@ -56,8 +53,11 @@ public class AccessController {
             return ACCESS_FORM;
         }
         ClientDto clientDto = clientService.findAllByEmail(principal.getName());
-        accessService.insert(accessDto);
-        return REDIRECT_ACCESSS + clientDto.getId();
+        if (!Objects.isNull(clientDto)) {
+            accessService.insert(accessDto);
+            return REDIRECT_ACCESSS + accessDto.getId();
+        }
+        return ERROR;
     }
 
     @RequestMapping(value = EDIT_ACCESS_ID, method = RequestMethod.GET)
@@ -75,7 +75,6 @@ public class AccessController {
         AccessDto accessDto = accessService.findById(id);
         if (!Objects.isNull(accessDto)) {
             model.addAttribute(ACCESS, accessDto);
-            model.addAttribute(EMAIL, principal.getName());
             return ACCESS_PAGE;
         }
         return ERROR;
@@ -85,8 +84,8 @@ public class AccessController {
     public String deleteAccessById(@PathVariable Long id, Principal principal) {
         AccessDto accessDto = accessService.findById(id);
         if (!Objects.isNull(accessDto)) {
-            accessService.delete(accessDto);
-            return REDIRECT_HOME;
+                accessService.delete(accessDto);
+                return REDIRECT_HOME;
         }
         return ERROR;
     }

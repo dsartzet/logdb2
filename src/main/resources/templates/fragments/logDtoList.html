@@ -1,0 +1,20 @@
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+<div th:fragment="accessLogDtos">
+    <div class="starter-template panel" th:each="object : ${pager.objects}">
+        <span th:if="${object.class.name == 'com.logdb.dto.AccessDto'}" >
+            <div th:replace="/accesslog/accessLog :: accessLog"/>
+        </span>
+        <span th:if="${object.class.name == 'com.logdb.dto.NamesystemDto'}" >
+            <div th:replace="namesystemLogFragments/namesystemLog :: namesystemLog"/>
+        </span>
+        <span th:if="${object.class.name == 'com.logdb.dto.DataxreceiverDto'}" >
+            <div th:replace="dataxreceiverLogFragments/dataxreceiverLog :: dataxreceiverLog"/>
+        </span>
+    </div>
+</div>
+</body>
+</html>

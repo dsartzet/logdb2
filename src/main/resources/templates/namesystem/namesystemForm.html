@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Logdb</title>
+    <div th:replace="/fragments/header :: header-css"/>
+</head>
+<body>
+<div th:replace="/fragments/header :: header"/>
+<div class="container">
+    <div class="container">
+        <div class="alert alert-info" th:if="${successMessage}" th:utext="${successMessage}"></div>
+        <div class="row" style="margin-top:20px">
+            <div class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3">
+                <form autocomplete="off" action="#" th:action="@{/create/namesystem}" th:object="${namesystem}" method="post" class="form-horizontal" role="form">
+                    <h2 class="text-center">Create a new access log</h2>
+                    <div class="form-group">
+                        <label th:if="${#fields.hasErrors('sourceIp')}" th:errors="*{sourceIp}" class="alert alert-danger"></label>
+                        <input type="text" th:field="*{sourceIp}" placeholder="Source Ip" class="form-control input-lg"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label th:if="${#fields.hasErrors('blocks')}" th:errors="*{blocks}" class="alert alert-danger"></label>
+                        <input type="text" th:field="*{blocks}" placeholder="Blocks" class="form-control input-lg"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label th:if="${#fields.hasErrors('destinationIps')}" th:errors="*{destinationIps}" class="alert alert-danger"></label>
+                        <input type="text" th:field="*{destinationIps}" placeholder="Destination Ips" class="form-control input-lg"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label th:if="${#fields.hasErrors('request.resource')}" th:errors="*{request.resource}" class="alert alert-danger"></label>
+                        <input type="text" th:field="*{request.resource}" placeholder="Resource" class="form-control input-lg"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label th:if="${#fields.hasErrors('response.status')}" th:errors="*{response.status}" class="alert alert-danger"></label>
+                        <input type="text" th:field="*{response.status}" placeholder="Status" class="form-control input-lg"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label th:if="${#fields.hasErrors('size')}" th:errors="*{size}" class="alert alert-danger"></label>
+                        <input type="text" th:field="*{size}" placeholder="Size" class="form-control input-lg"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label th:if="${#fields.hasErrors('type')}" th:errors="*{type}" class="alert alert-danger"></label>
+                        <input type="text" th:field="*{type}" placeholder="Type" class="form-control input-lg"/>
+                    </div>
+                    
+                    <input type="hidden" th:field="*{id}"/>
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary btn-blockDtos" value="Save"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row" th:if="${namesystem.id}">
+            <div class="col-md-6 col-md-offset-3">
+                <form action="#" th:action="@{'/namesystem/{id}'(id=${namesystem.id})}" th:method="delete"
+                      class="form-horizontal">
+                    <div class="form-group">
+                        <input type="hidden" name="_method" value="delete"/>
+                        <button type="submit" class="btn btn-danger btn-blockDtos" th:text="Delete">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="/fragments/footer :: footer"/>
+</body>
+</html>

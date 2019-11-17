@@ -4,7 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.sql.Timestamp;
 
@@ -28,13 +27,12 @@ public class Dataxceiver {
     @Column(name = "SIZE")
     private Long size;
 
-    @ManyToOne
-    @JoinColumn(name = "BLOCK_ID", nullable = false)
-    private Block block;
+    @Column(name = "BLOCK_ID", nullable = false)
+    private Long blockId;
 
     @ManyToOne
-    @JoinColumn(name = "DESTINATION_IP_ID", nullable = false)
-    private DestinationIp destinationIp;
+    @Column(name = "DESTINATION_IP", nullable = false)
+    private String destinationIp;
 
     public Long getId() {
         return id;
@@ -76,19 +74,19 @@ public class Dataxceiver {
         this.size = size;
     }
 
-    public Block getBlock() {
-        return block;
+    public Long getBlockId() {
+        return blockId;
     }
 
-    public void setBlock(Block block) {
-        this.block = block;
+    public void setBlockId(Long blockId) {
+        this.blockId = blockId;
     }
 
-    public DestinationIp getDestinationIp() {
+    public String getDestinationIp() {
         return destinationIp;
     }
 
-    public void setDestinationIp(DestinationIp destinationIp) {
+    public void setDestinationIp(String destinationIp) {
         this.destinationIp = destinationIp;
     }
 }
