@@ -10,6 +10,7 @@ public class NamesystemDto  extends LogDto {
 
     private String sourceIp;
     private Long size;
+    private String type;
     private List<Long> blockIds = new ArrayList<>();
     private List<String> destinationIps = new ArrayList<>();
 
@@ -27,6 +28,14 @@ public class NamesystemDto  extends LogDto {
 
     public void setSize(Long size) {
         this.size = size;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public List<Long> getBlockIds() {

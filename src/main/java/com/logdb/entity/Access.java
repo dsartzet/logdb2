@@ -37,9 +37,6 @@ public class Access
     @Column(name = "USER_ID",  nullable = false)
     private String userId;
 
-    @Column(name = "TYPE", length = 6)
-    private String type;
-
     public Long getId() {
         return id;
     }
@@ -94,13 +91,5 @@ public class Access
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 }

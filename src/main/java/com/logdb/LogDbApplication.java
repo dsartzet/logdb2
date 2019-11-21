@@ -6,7 +6,14 @@ import com.logdb.entity.Namesystem;
 import com.logdb.entity.Request;
 import com.logdb.entity.Response;
 import com.logdb.entity.Session;
-import com.logdb.repository.*;
+import com.logdb.repository.AccessRepository;
+import com.logdb.repository.DataxceiverRepository;
+import com.logdb.repository.NamesystemRepository;
+import com.logdb.repository.RequestRepository;
+import com.logdb.repository.ResponseRepository;
+import com.logdb.repository.SessionRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -32,6 +39,7 @@ import java.util.stream.Collectors;
 
 @SpringBootApplication
 public class LogDbApplication implements CommandLineRunner {
+    private static final Logger logger = LoggerFactory.getLogger(LogDbApplication.class);
 	private static final String ACCESS_LOG_PATH = "logs/access.log";
 	private static final String HDFS_DATAXCEIVER_LOG_PATH = "logs/HDFS_DataXceiver.log";
 	private static final String HDFS_FS_NAMESYSTEM_LOG_PATH = "logs/HDFS_FS_Namesystem.log";
@@ -69,16 +77,9 @@ public class LogDbApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... strings) {
-		System.out.println("Parsing....");
-/*
-		parseAccessInsertDB();
-*/
-		System.out.println("Done!");
-		System.out.println("Inserting...");
-/*
-		parseHdfsInsertDB();
-*/
-		System.out.println("Done!");
+        parseAccessInsertDB();
+        parseHdfsInsertDB();
+        logger.info("Successfully parsed and inserted data into postgres!!!");
 	}
 
 	private Timestamp toSqlTimestampFromAccessLog(String timeStr) {
@@ -118,7 +119,6 @@ public class LogDbApplication implements CommandLineRunner {
 					access.setTimestamp(toSqlTimestampFromAccessLog(timestamp));
 					access.setReferer(refer);
 					access.setUserId(userId);
-					access.setType("access");
 					String requestKey = httpMethod + resource;
 					String responseKey = "" + status + size;
 					String sessionKey = source_ip + userAgent;
@@ -145,7 +145,7 @@ public class LogDbApplication implements CommandLineRunner {
 					access.setSession(sessionMap.get(sessionKey));
 					accessList.add(access);
 				} else {
-					System.out.println(String.format("Couldn't match line %s in %s with pattern %s", line, file.getName(), ACCESS_LOGS_PATTERN));
+					logger.warn(String.format("Couldn't match line %s in %s with pattern %s", line, file.getName(), ACCESS_LOGS_PATTERN));
 				}
 			}
 		} catch (IOException e) {
@@ -190,7 +190,7 @@ public class LogDbApplication implements CommandLineRunner {
 						type = "Served";
 						size = null;
 					} else {
-						System.out.println(String.format("Couldn't match line %s in %s with pattern %s", line, file.getName(), SERVED_PATTERN));
+						logger.warn(String.format("Couldn't match line %s in %s with pattern %s", line, file.getName(), SERVED_PATTERN));
 					}
 				} else if (line.contains("Receiving") || line.contains("Received")) {
 					final Matcher matcher = RECEIVING_RECEIVED_PATTERN.matcher(line);
@@ -206,7 +206,7 @@ public class LogDbApplication implements CommandLineRunner {
 						destination_ip_port = destination_ip + ":" + destination_port;
 						size = matcher.group(8).isEmpty() ? null : Long.parseLong(matcher.group(8).trim().split("\\s+")[2]);
 					} else {
-						System.out.println(String.format("Couldn't match line %s in %s with pattern %s", line, file.getName(), RECEIVING_RECEIVED_PATTERN));
+						logger.warn(String.format("Couldn't match line %s in %s with pattern %s", line, file.getName(), RECEIVING_RECEIVED_PATTERN));
 					}
 				} else if (line.contains("received exception")
 							|| line.contains("Got exception")
@@ -216,7 +216,7 @@ public class LogDbApplication implements CommandLineRunner {
 					    "*received exception*" || "*Got exception*" || "*IOException*"
 					*/
 				} else {
-					System.out.println(String.format("Found unmatched line %s in %s", line, file.getName()));
+					logger.warn(String.format("Found unmatched line %s in %s", line, file.getName()));
 				}
 				// timestamp == null means ignored line
 				if (timestamp != null) {
@@ -253,18 +253,11 @@ public class LogDbApplication implements CommandLineRunner {
 						timestamp = matcher.group(1);
 						String source_ip = matcher.group(2);
 						String source_port = matcher.group(3);
-						source_ip_port = source_ip + source_port;
+						source_ip_port = source_ip + ":" + source_port;
 						block_id_list.add(matcher.group(4));
 						destination_ip_port_list = Arrays.asList(matcher.group(5).split("\\s+"));
-//						List<String> destination_ip_list = new ArrayList<>();
-//						List<String> destination_port_list = new ArrayList<>();
-//						for (String element : destination_ips) {
-//							String[] elementSplitted = element.split(":");
-//							destination_ip_list.add(elementSplitted[0]);
-//							destination_port_list.add(elementSplitted[1]);
-//						}
 					} else {
-						System.out.println(String.format("Couldn't match line %s in %s with pattern %s", line, file.getName(), REPLICATE_PATTERN));
+						logger.warn(String.format("Couldn't match line %s in %s with pattern %s", line, file.getName(), REPLICATE_PATTERN));
 					}
 				} else if (line.contains("delete")) {
 					final Matcher matcher = DELETE_PATTERN.matcher(line);
@@ -273,16 +266,16 @@ public class LogDbApplication implements CommandLineRunner {
 						timestamp = matcher.group(1);
 						String source_ip = matcher.group(2);
 						String source_port = matcher.group(3);
-						source_ip_port = source_ip + source_port;
+						source_ip_port = source_ip + ":" + source_port;
 						block_id_list = Arrays
 											.stream(matcher.group(4).split("\\s+"))
 											.map(blk -> blk.replace("blk_", ""))
 											.collect(Collectors.toList());
 					} else {
-						System.out.println(String.format("Couldn't match line %s in %s with pattern %s", line, file.getName(), DELETE_PATTERN));
+						logger.warn(String.format("Couldn't match line %s in %s with pattern %s", line, file.getName(), DELETE_PATTERN));
 					}
 				} else {
-					System.out.println(String.format("Found unmatched line %s in %s", line, file.getName()));
+					logger.warn(String.format("Found unmatched line %s in %s", line, file.getName()));
 				}
 				Namesystem namesystem = new Namesystem();
 				namesystem.setTimestamp(toSqlTimestampFromHDFS(timestamp));

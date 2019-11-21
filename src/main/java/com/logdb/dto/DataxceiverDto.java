@@ -7,6 +7,7 @@ public class DataxceiverDto extends LogDto{
     private String destinationIp;
     private Long blockId;
     private Long size;
+    private String type;
 
     public String getSourceIp() {
         return sourceIp;
@@ -40,4 +41,11 @@ public class DataxceiverDto extends LogDto{
         this.size = size;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }
