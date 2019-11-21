@@ -46,8 +46,8 @@ public class NamesystemDto  extends LogDto {
     }
 
     public void setDestinationIpsWithString(String destinationIps) {
-        if(Objects.isNull(destinationIps)){
-            destinationIps = null;
+        if(Objects.isNull(destinationIps) || destinationIps.isEmpty()){
+            this.destinationIps = null;
         } else {
             this.destinationIps= Arrays.asList(destinationIps.split(","));
         }
@@ -66,6 +66,14 @@ public class NamesystemDto  extends LogDto {
             return null;
         } else {
             return blockIds.stream().map(n -> String.valueOf(n)).collect(Collectors.joining(","));
+        }
+    }
+
+    public void setBlockIdsWithString(String blockIds) {
+        if (Objects.isNull(blockIds) || blockIds.isEmpty()) {
+            this.blockIds = null;
+        } else {
+            this.blockIds = Arrays.asList(blockIds.split(",")).stream().map(Long::parseLong).collect(Collectors.toList());
         }
     }
 

@@ -43,7 +43,7 @@ public class AccessMapperImpl implements AccessMapper{
             return null;
         }
         AccessDto accessDto = new AccessDto();
-        accessDto.setId(accessDto.getId());
+        accessDto.setId(access.getId());
         accessDto.setRequestDto(requestMapper.convert(access.getRequest()));
         accessDto.setResponseDto(responseMapper.convert(access.getResponse()));
         accessDto.setSessionDto(sessionMapper.convert(access.getSession()));

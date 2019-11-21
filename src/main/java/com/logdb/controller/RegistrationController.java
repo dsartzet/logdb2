@@ -18,7 +18,7 @@ import com.logdb.service.ClientService;
 public class RegistrationController {
 
     protected static final String REGISTRATION = "/registration";
-    protected static final String CLIENT = "clientService";
+    protected static final String CLIENT = "client";
     protected static final String EMAIL = "email";
     protected static final String ERROR_CLIENT = "error.clientService";
     protected static final String THERE_IS_ALREADY_A_CLIENT_REGISTERED_WITH_THE_EMAIL_PROVIDED = "There is already a clientService registered with the email provided";

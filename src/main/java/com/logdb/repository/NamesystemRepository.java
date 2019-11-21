@@ -1,11 +1,16 @@
 package com.logdb.repository;
 
 import com.logdb.entity.Namesystem;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
 
 public interface NamesystemRepository extends CrudRepository<Namesystem, Long> {
 
-    List<Namesystem> findAll();
+    Page<Namesystem> findAll(Pageable pageRequest);
+
+    Page<Namesystem> findBySourceIpOrDestinationIps(String sip, String dip, Pageable pageRequest);
+
+
 }

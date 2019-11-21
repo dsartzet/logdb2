@@ -2,10 +2,13 @@ package com.logdb.controller;
 
 import com.logdb.dto.NamesystemDto;
 import com.logdb.dto.ClientDto;
+import com.logdb.entity.Event;
+import com.logdb.service.EventLogService;
 import com.logdb.service.NameSystemService;
 import com.logdb.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,21 +22,24 @@ import java.util.Objects;
 @Controller
 public class NameSystemController {
 
-    protected static final String NAMESYSTEM_FORM = "/namesystemForm";
+    protected static final String NAMESYSTEM_FORM = "/namesystemlogForm";
     protected static final String ERROR = "/error";
-    protected static final String CREATE_NAMESYSTEM = "/create/namesystem";
-    protected static final String NAMESYSTEM = "namesystem";
-    protected static final String REDIRECT_NAMESYSTEMS = "redirect:/namesystems/";
-    protected static final String EDIT_NAMESYSTEM_ID = "/edit/namesystem/{id}";
-    protected static final String NAMESYSTEM_ID = "/namesystem/{id}";
+    protected static final String CREATE_NAMESYSTEM = "/create/namesystemlog";
+    protected static final String NAMESYSTEM = "object";
+    protected static final String REDIRECT_NAMESYSTEMS = "redirect:/namesystemlog/";
+    protected static final String EDIT_NAMESYSTEM_ID = "/edit/namesystemlog/{id}";
+    protected static final String NAMESYSTEM_ID = "/namesystemlog/{id}";
     protected static final String REDIRECT_HOME = "redirect:/home";
-    protected static final String NAMESYSTEM_PAGE = "/namesystem";
+    protected static final String NAMESYSTEM_PAGE = "/namesystemlogInfo";
 
     @Autowired
     protected NameSystemService namesystemService;
 
     @Autowired
     protected ClientService clientService;
+
+    @Autowired
+    EventLogService eventLogService;
 
 
     @RequestMapping(value = CREATE_NAMESYSTEM, method = RequestMethod.GET)
@@ -48,13 +54,15 @@ public class NameSystemController {
     }
 
     @RequestMapping(value = CREATE_NAMESYSTEM, method = RequestMethod.POST)
+    @Transactional
     public String createNamesystemPost(Principal principal, @Valid NamesystemDto namesystemDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return NAMESYSTEM_FORM;
         }
         ClientDto clientDto = clientService.findAllByEmail(principal.getName());
         if (!Objects.isNull(clientDto)) {
-            namesystemService.insert(namesystemDto);
+            namesystemDto = namesystemService.insert(namesystemDto);
+            eventLogService.save(new Event("Created/updated namesystemlog .ID:" + namesystemDto.getId(), clientDto.getId()));
             return REDIRECT_NAMESYSTEMS + namesystemDto.getId();
         }
         return ERROR;
@@ -81,11 +89,16 @@ public class NameSystemController {
     }
 
     @RequestMapping(value = NAMESYSTEM_ID, method = RequestMethod.DELETE)
+    @Transactional
     public String deleteNamesystemById(@PathVariable Long id, Principal principal) {
-        NamesystemDto namesystemDto = namesystemService.findById(id);
-        if (!Objects.isNull(namesystemDto)) {
+        ClientDto clientDto = clientService.findAllByEmail(principal.getName());
+        if (!Objects.isNull(clientDto)) {
+            NamesystemDto namesystemDto = namesystemService.findById(id);
+            if (!Objects.isNull(namesystemDto)) {
                 namesystemService.delete(namesystemDto);
+                eventLogService.save(new Event("Deleted namesystemlog .ID:" + namesystemDto.getId(), clientDto.getId()));
                 return REDIRECT_HOME;
+            }
         }
         return ERROR;
     }

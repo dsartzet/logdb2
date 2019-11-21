@@ -27,13 +27,13 @@
                     <li class="active"><a th:href="@{'/canned-queries'}">Canned Queries</a></li>
                 </ul>
                 <ul class="nav navbar-nav" sec:authorize="!isAnonymous()">
-                    <li class="active"><a th:href="@{'/create/accessLog'}">New AccessLog</a></li>
+                    <li class="active"><a th:href="@{'/create/accesslog'}">New AccessLog</a></li>
                 </ul>
                 <ul class="nav navbar-nav" sec:authorize="!isAnonymous()">
-                    <li class="active"><a th:href="@{'/create/namesytemlog'}">New NameSystemLog</a></li>
+                    <li class="active"><a th:href="@{'/create/namesystemlog'}">New NameSystemLog</a></li>
                 </ul>
                 <ul class="nav navbar-nav" sec:authorize="!isAnonymous()">
-                    <li class="active"><a th:href="@{'/create/dataxreceiver'}">New DataXreceiverLog</a></li>
+                    <li class="active"><a th:href="@{'/create/dataxreceiverlog'}">New DataXreceiverLog</a></li>
                 </ul>
                 <ul class="nav navbar-nav" sec:authorize="!isAnonymous()">
                     <li class="active"><a th:href="@{/logout}">Sign Out</a></li>

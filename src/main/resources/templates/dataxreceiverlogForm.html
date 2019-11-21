@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Logdb</title>
+    <div th:replace="/fragments/header :: header-css"/>
+</head>
+<body>
+<div th:replace="/fragments/header :: header"/>
+<div class="container">
+    <div class="container">
+        <div class="alert alert-info" th:if="${successMessage}" th:utext="${successMessage}"></div>
+        <div class="row" style="margin-top:20px">
+            <div class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3">
+                <form autocomplete="off" action="#" th:action="@{/create/dataxreceiverlog}" th:object="${object}" method="post" class="form-horizontal" role="form">
+                    <h2 class="text-center">Create a new access log</h2>
+                    <div class="form-group">
+                        <p>Source Ip: <input type="text" th:field="*{sourceIp}" placeholder="Source Ip" class="form-control input-lg"/></p>
+                        <p>Destination Ip: <input type="text" th:field="*{destinationIp}" placeholder="Destination Ip" class="form-control input-lg"/></p>
+                        <p>Block Id: <input type="text" th:field="*{blockId}" placeholder="Block Id" class="form-control input-lg"/></p>
+                        <p>Size: <input type="text" th:field="*{size}" placeholder="Size" class="form-control input-lg"/></p>
+                        <p>Type: <input type="text" th:field="*{type}" placeholder="Type" class="form-control input-lg"/></p>
+                        <input type="hidden" th:field="*{id}"/>
+                        <input type="submit" class="btn btn-primary btn-block" value="Save"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row" th:if="${object.id}">
+            <div class="col-md-6 col-md-offset-3">
+                <form action="#" th:action="@{'/dataxreceiverlog/{id}'(id=${object.id})}" th:method="delete"
+                      class="form-horizontal">
+                    <div class="form-group">
+                        <input type="hidden" name="_method" value="delete"/>
+                        <button type="submit" class="btn btn-danger btn-block" th:text="Delete">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="/fragments/footer :: footer"/>
+</body>
+</html>

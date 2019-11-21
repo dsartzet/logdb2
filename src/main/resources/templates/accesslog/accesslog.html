@@ -7,26 +7,28 @@
 <div th:fragment="accesslog">
     <div class="jumbotron">
         <div class="panel-heading">
-            <h2><a th:text="${accessLog.id}" th:href="@{'/accesslog/' + ${accessLog.id}}">Title</a></h2>
-            <div style="float:left; margin:3px;" th:text="' at  ' + ${#dates.format(accessLog.timestamp, 'dd-MM-yyyy  HH:MM')}"></div>
-            <div sec:authorize="isAuthenticated()" th:if="${email}">
+            <h4><a th:text="'AccessLog(id:'+${object.id}+')'" th:href="@{'/accesslog/' + ${object.id}}">Title</a></h4>
+            <div style="float:left; margin:3px;" th:text="' timestamp:  ' + ${#dates.format(object.timestamp, 'dd-MM-yyyy  HH:MM')}"></div>
+            <div sec:authorize="isAuthenticated()" >
                 <div class="row">
-                    <a th:href="@{'/edit/accesslog/{id}'(id=${accessLog.id})}" class="col-md-2">
+                    <a th:href="@{'/edit/accesslog/{id}'(id=${object.id})}" class="col-md-2">
                         <button type="button" class="btn btn-primary btn-blockDtos" th:text="Edit">Edit</button>
                     </a>
                 </div>
             </div>
         </div>
         <hr />
-        <h4 class="panel-body" th:text="${accessLog.session.sourceIp}">Source Ip</h4>
-        <h4 class="panel-body" th:text="${accessLog.session.userAgent}">User agent</h4>
-        <h4 class="panel-body" th:text="${accessLog.request.httpMethod}">Http method</h4>
-        <h4 class="panel-body" th:text="${accessLog.request.resource}">Resource</h4>
-        <h4 class="panel-body" th:text="${accessLog.response.status}">Status</h4>
-        <h4 class="panel-body" th:text="${accessLog.response.size}">Size</h4>
-        <h4 class="panel-body" th:text="${accessLog.userId}">User Id</h4>
-        <h4 class="panel-body" th:text="${accessLog.type}">Type</h4>
-        <br>
+        <div class="panel-body">
+            <h6 th:text="'Source Ip: '+ ${object.sessionDto.ip}" >Source Ip</h6>
+            <h6 th:text="'Size: '+${object.responseDto.size}">Size</h6>
+            <h6 th:text="'Type: '+${object.type}">Type</h6>
+            <h6 th:text="'User Id: '+${object.userId}">User Id</h6>
+            <h6 th:text="'User Agent: '+${object.sessionDto.browser}">User Agent</h6>
+            <h6 th:text="'Referrer: '+${object.referer}">Referrer</h6>
+            <h6 th:text="'Http Method: '+${object.requestDto.method}" >Http method</h6>
+            <h6 th:text="'Resource: '+${object.requestDto.resource}">Resource</h6>
+            <h6 th:text="'Status: '+${object.responseDto.status}">Status</h6>
+        </div>
     </div>
 
 </div>

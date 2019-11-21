@@ -3,9 +3,13 @@ package com.logdb.service;
 import com.logdb.dto.DataxceiverDto;
 import com.logdb.mapper.DataxceiverMapper;
 import com.logdb.repository.DataxceiverRepository;
+import com.logdb.utils.Pager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,9 +23,15 @@ public class DataxreceiverServiceImpl implements DataxreceiverService {
     private DataxceiverMapper dataxceiverMapper;
 
     @Override
-    public List<DataxceiverDto> findAll() {
-        return dataxceiverRepository.findAll().stream().map(dxc -> dataxceiverMapper.convert(dxc)).collect(Collectors.toList());
+    public Page<DataxceiverDto> findAll(int page) {
+        return dataxceiverRepository.findAll((PageRequest.of(Pager.subtractPageByOne(page), 1))).map(dxc -> dataxceiverMapper.convert(dxc));
     }
+
+    @Override
+    public Page<DataxceiverDto> findByIp(int page, String ip) {
+        return dataxceiverRepository.findBySourceIpOrDestinationIp(ip, ip,(PageRequest.of(Pager.subtractPageByOne(page), 1))).map(dxc -> dataxceiverMapper.convert(dxc));
+    }
+
 
     @Override
     public DataxceiverDto findById(Long id) {
@@ -30,6 +40,7 @@ public class DataxreceiverServiceImpl implements DataxreceiverService {
 
     @Override
     public DataxceiverDto insert(DataxceiverDto dataxceiverDto) {
+        dataxceiverDto.setTimestamp(new Timestamp(System.currentTimeMillis()));
         return dataxceiverMapper.convert(dataxceiverRepository.save(dataxceiverMapper.convert(dataxceiverDto)));
     }
 

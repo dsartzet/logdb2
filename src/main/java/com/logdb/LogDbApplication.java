@@ -32,9 +32,9 @@ import java.util.stream.Collectors;
 
 @SpringBootApplication
 public class LogDbApplication implements CommandLineRunner {
-	private static final String ACCESS_LOG_PATH = "/home/d.sartzetakis/Desktop/ASKISI/access.log";
-	private static final String HDFS_DATAXCEIVER_LOG_PATH = "/home/d.sartzetakis/Desktop/ASKISI/HDFS_DataXceiver.log";
-	private static final String HDFS_FS_NAMESYSTEM_LOG_PATH = "/home/d.sartzetakis/Desktop/ASKISI/HDFS_FS_Namesystem.log";
+	private static final String ACCESS_LOG_PATH = "logs/access.log";
+	private static final String HDFS_DATAXCEIVER_LOG_PATH = "logs/HDFS_DataXceiver.log";
+	private static final String HDFS_FS_NAMESYSTEM_LOG_PATH = "logs/HDFS_FS_Namesystem.log";
 	private static final String ACCESS_LOGS_TIME_PATTERN = "dd/MMM/yyyy:HH:mm:ss Z";
 	private static final String HDFS_TIME_PATTERN = "ddMMyy HHmmss";
 	private static final DateTimeFormatter ACCESS_LOGS_TIME_FORMATTER = DateTimeFormatter.ofPattern(ACCESS_LOGS_TIME_PATTERN);
@@ -69,8 +69,16 @@ public class LogDbApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... strings) {
+		System.out.println("Parsing....");
+/*
 		parseAccessInsertDB();
+*/
+		System.out.println("Done!");
+		System.out.println("Inserting...");
+/*
 		parseHdfsInsertDB();
+*/
+		System.out.println("Done!");
 	}
 
 	private Timestamp toSqlTimestampFromAccessLog(String timeStr) {
@@ -85,7 +93,7 @@ public class LogDbApplication implements CommandLineRunner {
 	}
 
 	private void parseAccessInsertDB() {
-		File file = new File(ACCESS_LOG_PATH);
+		File file = new File(getClass().getClassLoader().getResource(ACCESS_LOG_PATH).getFile());
 		List<Access> accessList = new ArrayList<>();
 		Map<String,Request> requestMap = new HashMap<>();
 		Map<String, Response> responseMap = new HashMap<>();
@@ -159,7 +167,7 @@ public class LogDbApplication implements CommandLineRunner {
 	}
 
 	private void parseDataXceiver(List<Dataxceiver> dataxceiverList) {
-		File file = new File(HDFS_DATAXCEIVER_LOG_PATH);
+		File file = new File(getClass().getClassLoader().getResource(HDFS_DATAXCEIVER_LOG_PATH).getFile());
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			String line;
 			while ((line = br.readLine()) != null) {
@@ -228,7 +236,7 @@ public class LogDbApplication implements CommandLineRunner {
 	}
 
 	private void parseFsNameSystem(List<Namesystem> namesystemList) {
-		File file = new File(HDFS_FS_NAMESYSTEM_LOG_PATH);
+		File file = new File(getClass().getClassLoader().getResource(HDFS_FS_NAMESYSTEM_LOG_PATH).getFile());
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			String line;
 			while ((line = br.readLine()) != null) {

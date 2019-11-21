@@ -30,7 +30,6 @@ public class Dataxceiver {
     @Column(name = "BLOCK_ID", nullable = false)
     private Long blockId;
 
-    @ManyToOne
     @Column(name = "DESTINATION_IP", nullable = false)
     private String destinationIp;
 

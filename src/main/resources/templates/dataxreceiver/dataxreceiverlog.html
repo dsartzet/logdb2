@@ -1,0 +1,34 @@
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+</head>
+<body>
+<div th:fragment="dataxreceiverlog">
+    <div class="jumbotron">
+        <div class="panel-heading">
+            <h4><a th:text="'DataXreceiverLog(id:'+${object.id}+')'" th:href="@{'/dataxreceiverlog/' + ${object.id}}">Title</a></h4>
+            <div style="float:left; margin:3px;" th:text="' timestamp:  ' + ${#dates.format(object.timestamp, 'dd-MM-yyyy  HH:MM')}"></div>
+            <div sec:authorize="isAuthenticated()">
+                <div class="row">
+                    <a th:href="@{'/edit/dataxreceiverlog/{id}'(id=${object.id})}" class="col-md-2">
+                        <button type="button" class="btn btn-primary btn-blockDtos" th:text="Edit">Edit</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="panel-body">
+            <h6  th:text="'Source Ip: ' + ${object.sourceIp}">Source Ip</h6>
+            <h6  th:text="'Destination Ip: ' + ${object.destinationIp}">Destination Ip</h6>
+            <h6  th:text="'Size: ' + ${object.size}">Size</h6>
+            <h6  th:text="'Type: ' + ${object.type}">Type</h6>
+            <h6  th:text="'Block Id: ' + ${object.blockId}">Block Id</h6>
+        </div>
+        <br>
+    </div>
+
+</div>
+</body>
+</html>
+

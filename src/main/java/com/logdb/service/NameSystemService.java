@@ -1,6 +1,7 @@
 package com.logdb.service;
 
 import com.logdb.dto.NamesystemDto;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -13,7 +14,8 @@ public interface NameSystemService {
 
     void delete(NamesystemDto namesystemDto);
 
+    Page<NamesystemDto> findByIp(int page, String ip);
 
-    List<NamesystemDto> findAll();
+    Page<NamesystemDto> findAll(int page);
 
 }

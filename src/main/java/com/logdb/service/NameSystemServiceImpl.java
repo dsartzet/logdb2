@@ -3,11 +3,14 @@ package com.logdb.service;
 import com.logdb.dto.NamesystemDto;
 import com.logdb.mapper.NamesystemMapper;
 import com.logdb.repository.NamesystemRepository;
+import com.logdb.utils.Pager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.sql.Timestamp;
+
 
 @Component
 public class NameSystemServiceImpl implements NameSystemService {
@@ -20,8 +23,13 @@ public class NameSystemServiceImpl implements NameSystemService {
     private NamesystemMapper namesystemMapper;
 
     @Override
-    public List<NamesystemDto> findAll() {
-        return namesystemRepository.findAll().stream().map(nms -> namesystemMapper.convert(nms)).collect(Collectors.toList());
+    public Page<NamesystemDto> findAll(int page) {
+        return namesystemRepository.findAll((PageRequest.of(Pager.subtractPageByOne(page), 1))).map(nms -> namesystemMapper.convert(nms));
+    }
+
+    @Override
+    public Page<NamesystemDto> findByIp(int page, String ip) {
+        return namesystemRepository.findBySourceIpOrDestinationIps(ip, ip,(PageRequest.of(Pager.subtractPageByOne(page), 1))).map(nms -> namesystemMapper.convert(nms));
     }
 
     @Override
@@ -31,6 +39,7 @@ public class NameSystemServiceImpl implements NameSystemService {
 
     @Override
     public NamesystemDto insert(NamesystemDto namesystemDto) {
+        namesystemDto.setTimestamp(new Timestamp(System.currentTimeMillis()));
         return namesystemMapper.convert(namesystemRepository.save(namesystemMapper.convert(namesystemDto)));
     }
 

@@ -14,5 +14,7 @@ public interface AccessService {
 
     void delete(AccessDto accessDto);
 
-    List<AccessDto> findAll();
+    Page<AccessDto> findAll(int page);
+
+    Page<AccessDto> findByIp(int page, String ip);
 }

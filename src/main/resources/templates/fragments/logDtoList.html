@@ -3,16 +3,16 @@
 <head>
 </head>
 <body>
-<div th:fragment="accessLogDtos">
+<div th:fragment="logDtoList">
     <div class="starter-template panel" th:each="object : ${pager.objects}">
         <span th:if="${object.class.name == 'com.logdb.dto.AccessDto'}" >
-            <div th:replace="/accesslog/accessLog :: accessLog"/>
+            <div th:replace="/accesslog/accesslog :: accesslog"/>
         </span>
         <span th:if="${object.class.name == 'com.logdb.dto.NamesystemDto'}" >
-            <div th:replace="namesystemLogFragments/namesystemLog :: namesystemLog"/>
+            <div th:replace="/namesystem/namesystemlog :: namesystemlog"/>
         </span>
-        <span th:if="${object.class.name == 'com.logdb.dto.DataxreceiverDto'}" >
-            <div th:replace="dataxreceiverLogFragments/dataxreceiverLog :: dataxreceiverLog"/>
+        <span th:if="${object.class.name == 'com.logdb.dto.DataxceiverDto'}" >
+            <div th:replace="/dataxreceiver/dataxreceiverlog :: dataxreceiverlog"/>
         </span>
     </div>
 </div>
