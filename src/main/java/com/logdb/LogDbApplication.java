@@ -171,23 +171,22 @@ public class LogDbApplication implements CommandLineRunner {
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			String line;
 			while ((line = br.readLine()) != null) {
-				String source_ip_port = null;
+				String source_ip = null;
 				String type = null;
 				String timestamp = null;
 				Long size = null;
 				String block_id = null;
-				String destination_ip_port = null;
+				String destination_ip = null;
 				if (line.contains("Served")) {
 					final Matcher matcher = SERVED_PATTERN.matcher(line);
 					if (matcher.find()) {
 						timestamp = matcher.group(1);
-						String source_ip = matcher.group(2);
-						String source_port = matcher.group(3);
-						source_ip_port = source_ip + ":" + source_port;
+						source_ip = matcher.group(2);
+//						String source_port = matcher.group(3);
 						block_id = matcher.group(4);
 						// only destination ip here
-						destination_ip_port = matcher.group(5);
-						type = "Served";
+						destination_ip = matcher.group(5);
+						type = "served";
 						size = null;
 					} else {
 						logger.warn(String.format("Couldn't match line %s in %s with pattern %s", line, file.getName(), SERVED_PATTERN));
@@ -196,14 +195,12 @@ public class LogDbApplication implements CommandLineRunner {
 					final Matcher matcher = RECEIVING_RECEIVED_PATTERN.matcher(line);
 					if (matcher.find()) {
 						timestamp = matcher.group(1);
-						type = matcher.group(2);
+						type = matcher.group(2).toLowerCase();
 						block_id = matcher.group(3);
-						String source_ip = matcher.group(4);
-						String source_port = matcher.group(5);
-						source_ip_port = source_ip + ":" + source_port;
-						String destination_ip = matcher.group(6);
-						String destination_port = matcher.group(7);
-						destination_ip_port = destination_ip + ":" + destination_port;
+						source_ip = matcher.group(4);
+//						String source_port = matcher.group(5);
+						destination_ip = matcher.group(6);
+//						String destination_port = matcher.group(7);
 						size = matcher.group(8).isEmpty() ? null : Long.parseLong(matcher.group(8).trim().split("\\s+")[2]);
 					} else {
 						logger.warn(String.format("Couldn't match line %s in %s with pattern %s", line, file.getName(), RECEIVING_RECEIVED_PATTERN));
@@ -223,10 +220,10 @@ public class LogDbApplication implements CommandLineRunner {
 					Dataxceiver dataxceiver = new Dataxceiver();
 					dataxceiver.setTimestamp(toSqlTimestampFromHDFS(timestamp));
 					dataxceiver.setType(type);
-					dataxceiver.setSourceIp(source_ip_port);
+					dataxceiver.setSourceIp(source_ip);
 					dataxceiver.setSize(size);
 					dataxceiver.setBlockId(Long.parseLong(block_id));
-					dataxceiver.setDestinationIp(destination_ip_port);
+					dataxceiver.setDestinationIp(destination_ip);
 					dataxceiverList.add(dataxceiver);
 				}
 			}
@@ -240,22 +237,24 @@ public class LogDbApplication implements CommandLineRunner {
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			String line;
 			while ((line = br.readLine()) != null) {
-				String source_ip_port = null;
+				String source_ip = null;
 				String type = null;
 				String timestamp = null;
 				Long size = null;
 				List<String> block_id_list = new ArrayList<>();
-				List<String> destination_ip_port_list = new ArrayList<>();
+				List<String> destination_ip_list = new ArrayList<>();
 				if (line.contains("replicate")) {
 					final Matcher matcher = REPLICATE_PATTERN.matcher(line);
 					if (matcher.find()) {
 						type = "replicate";
 						timestamp = matcher.group(1);
-						String source_ip = matcher.group(2);
-						String source_port = matcher.group(3);
-						source_ip_port = source_ip + ":" + source_port;
+						source_ip = matcher.group(2);
+//						String source_port = matcher.group(3);
 						block_id_list.add(matcher.group(4));
-						destination_ip_port_list = Arrays.asList(matcher.group(5).split("\\s+"));
+						String[] destination_ips = matcher.group(5).split("\\s+");
+						for (String element : destination_ips) {
+							destination_ip_list.add(element.split(":")[0]);
+						}
 					} else {
 						logger.warn(String.format("Couldn't match line %s in %s with pattern %s", line, file.getName(), REPLICATE_PATTERN));
 					}
@@ -264,9 +263,8 @@ public class LogDbApplication implements CommandLineRunner {
 					if (matcher.find()) {
 						type = "delete";
 						timestamp = matcher.group(1);
-						String source_ip = matcher.group(2);
-						String source_port = matcher.group(3);
-						source_ip_port = source_ip + ":" + source_port;
+						source_ip = matcher.group(2);
+//						String source_port = matcher.group(3);
 						block_id_list = Arrays
 											.stream(matcher.group(4).split("\\s+"))
 											.map(blk -> blk.replace("blk_", ""))
@@ -280,10 +278,10 @@ public class LogDbApplication implements CommandLineRunner {
 				Namesystem namesystem = new Namesystem();
 				namesystem.setTimestamp(toSqlTimestampFromHDFS(timestamp));
 				namesystem.setType(type);
-				namesystem.setSourceIp(source_ip_port);
+				namesystem.setSourceIp(source_ip);
 				namesystem.setSize(size);
 				namesystem.setBlockIds(block_id_list.stream().map(Long::parseLong).collect(Collectors.toList()));
-				namesystem.setDestinationIps(destination_ip_port_list);
+				namesystem.setDestinationIps(destination_ip_list);
 				namesystemList.add(namesystem);
 			}
 		} catch (IOException e) {
