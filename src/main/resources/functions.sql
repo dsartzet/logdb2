@@ -381,5 +381,5 @@ AS $$
     GROUP BY
         s.source_ip
     HAVING
-        COUNT(DISTINCT req.http_method) = 4
+        COUNT(DISTINCT req.http_method) >= 4
 $$ LANGUAGE SQL;
