@@ -214,15 +214,18 @@ RETURNS
         http_method VARCHAR,
         resource VARCHAR,
         size BIGINT,
-        status INTEGER
+        status INTEGER,
+        source_ip VARCHAR,
+        user_agent VARCHAR
     )
 AS $$
     SELECT
-        a.id, a.referer, a.timestamp, a.user_id, req.http_method, req.resource, res.size, res.status
+        a.id, a.referer, a.timestamp, a.user_id, req.http_method, req.resource, res.size, res.status, s.source_ip, s.user_agent
     FROM
         public.access AS a
     INNER JOIN public.request AS req ON a.request_id = req.id
     INNER JOIN public.response AS res ON a.response_id = res.id
+    INNER JOIN public.session AS s ON a.session_id = s.id
     WHERE
         res.size < sizeIn
     ORDER BY
