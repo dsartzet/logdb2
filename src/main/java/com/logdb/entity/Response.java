@@ -4,8 +4,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
 
 @Entity
+@Table(indexes = {
+        @Index(columnList = "size", name = "size_idx")
+})
 public class Response {
 
     @Id

@@ -4,11 +4,17 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Entity
+@Table(indexes = {
+        @Index(columnList = "request_id", name = "request_id_idx"),
+        @Index(columnList = "response_id", name = "response_id_idx")
+})
 public class Access
 {
     @Id

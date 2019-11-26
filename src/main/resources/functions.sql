@@ -245,7 +245,7 @@ AS $$
          public.block AS b
     WHERE
          n.id = b.namesystem_id AND
-         d.type = 'Served' AND
+         d.type = 'served' AND
          n.type = 'replicate' AND
          b.block_id = d.block_id AND
          DATE(d.timestamp) = DATE(n.timestamp)
@@ -267,7 +267,7 @@ AS $$
          public.block AS b
     WHERE
          n.id = b.namesystem_id AND
-         d.type = 'Served' AND
+         d.type = 'served' AND
          n.type = 'replicate' AND
          b.block_id = d.block_id AND
          DATE(d.timestamp) = DATE(n.timestamp) AND
@@ -282,19 +282,11 @@ CREATE OR REPLACE FUNCTION query_10
 RETURNS
     TABLE
     (
-        id BIGINT,
-        referer VARCHAR,
-        user_id VARCHAR,
-        http_method VARCHAR,
-        resource VARCHAR,
-        size BIGINT,
-        status INTEGER,
-        source_ip VARCHAR,
-        user_agent VARCHAR
+        id BIGINT
     )
 AS $$
     SELECT
-        a.id, a.referer, a.user_id, req.http_method, req.resource, res.size, res.status, s.source_ip, s.user_agent
+        a.id
     FROM
         public.access AS a
     INNER JOIN public.session AS s ON a.session_id = s.id
