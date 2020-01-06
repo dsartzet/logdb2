@@ -85,11 +85,12 @@ public class LogController {
     /*9. Find the top fifty administrators, with regard to the total number of source IPs for which
         they have upvoted logs.*/
 
-    @RequestMapping(value = "/admins/most-upvotes-ips/top-fifty", method = RequestMethod.GET)
-    @ResponseBody
-    List<ClientDto> mostUpvotesInDifferentIps() {
-    return logService.mostUpvotesInDifferentIps();
-    }
+    // TODO change request mapping value
+//    @RequestMapping(value = "/admins/most-upvotes-ips/top-fifty", method = RequestMethod.GET)
+//    @ResponseBody
+//    List<ClientDto> mostUpvotesInDifferentIps() {
+//    return logService.mostUpvotesInDifferentIps();
+//    }
 
     /*10. Find all logs for which the same e-mail has been used for more than one usernames when
         casting an upvote.*/

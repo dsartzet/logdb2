@@ -1,39 +1,45 @@
 package com.logdb;
 
-import com.logdb.entity.Access;
-import com.logdb.entity.Dataxceiver;
-import com.logdb.entity.Namesystem;
-import com.logdb.entity.Request;
-import com.logdb.entity.Response;
-import com.logdb.entity.Session;
+import com.github.javafaker.Faker;
+import com.logdb.document.Access;
+import com.logdb.document.Admin;
+import com.logdb.document.Dataxceiver;
+import com.logdb.document.HttpMethodEnum;
+import com.logdb.document.Log;
+import com.logdb.document.Namesystem;
+import com.logdb.repository.AdminRepository;
+import com.logdb.repository.LogRepository;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SpringBootApplication
 public class LogDbApplication implements CommandLineRunner {
-    private static final Logger logger = LoggerFactory.getLogger(LogDbApplication.class);
+	private static final Logger logger = LoggerFactory.getLogger(LogDbApplication.class);
 	private static final String ACCESS_LOG_PATH = "logs/access.log";
 	private static final String HDFS_DATAXCEIVER_LOG_PATH = "logs/HDFS_DataXceiver.log";
 	private static final String HDFS_FS_NAMESYSTEM_LOG_PATH = "logs/HDFS_FS_Namesystem.log";
@@ -51,120 +57,102 @@ public class LogDbApplication implements CommandLineRunner {
 	private static final Pattern SERVED_PATTERN = Pattern.compile(SERVED_REGEX);
 	private static final Pattern REPLICATE_PATTERN = Pattern.compile(REPLICATE_REGEX);
 	private static final Pattern DELETE_PATTERN = Pattern.compile(DELETE_REGEX);
-
-	@Autowired
-	private AccessRepository accessRepository;
-	@Autowired
-	private RequestRepository requestRepository;
-	@Autowired
-	private ResponseRepository responseRepository;
-	@Autowired
-	private SessionRepository sessionRepository;
-	@Autowired
-	private DataxceiverRepository dataxceiverRepository;
-	@Autowired
-	private NamesystemRepository namesystemRepository;
+	private static final int BATCH_SIZE = 300_000;
+	private static final List<String> HTTP_METHOD_NAMES = Stream.of(HttpMethodEnum.values()).map(HttpMethodEnum::name).collect(Collectors.toList());
 
 	public static void main(String[] args) {
 		SpringApplication.run(LogDbApplication.class, args);
 	}
 
+	@Autowired
+	MongoTemplate mongoTemplate;
+
+	@Autowired
+	private LogRepository logRepository;
+
+	@Autowired
+	private AdminRepository adminRepository;
+
 	@Override
 	public void run(String... strings) {
         parseAccessInsertDB();
-        parseHdfsInsertDB();
-        logger.info("Successfully parsed and inserted data into postgres!!!");
+        parseDataXceiver();
+        parseFsNameSystem();
+        generateAdminData();
+		logger.info("Successfully parsed/generated and inserted data into mongodb!!!");
 	}
 
-	private Timestamp toSqlTimestampFromAccessLog(String timeStr) {
+	private LocalDateTime toLocalDateTimeFromAccessLog(String timeStr) {
 		ZonedDateTime date = ZonedDateTime.parse(timeStr, ACCESS_LOGS_TIME_FORMATTER);
-		// apply zone offset in UTC timezone (sql does not keep timezones)
-		return Timestamp.valueOf(LocalDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC));
+		// apply zone offset in UTC timezone (mongodb does not keep timezones)
+		return LocalDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
 	}
 
-	private Timestamp toSqlTimestampFromHDFS(String timeStr) {
-		LocalDateTime date = LocalDateTime.parse(timeStr, HDFS_TIME_FORMATTER);
-		return Timestamp.valueOf(date);
+	private LocalDateTime toLocalDateTimeFromHDFS(String timeStr) {
+		return LocalDateTime.parse(timeStr, HDFS_TIME_FORMATTER);
 	}
 
 	private void parseAccessInsertDB() {
 		File file = new File(getClass().getClassLoader().getResource(ACCESS_LOG_PATH).getFile());
-		List<Access> accessList = new ArrayList<>();
-		Map<String,Request> requestMap = new HashMap<>();
-		Map<String, Response> responseMap = new HashMap<>();
-		Map<String, Session> sessionMap = new HashMap<>();
+		List<Log> logList = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			String line;
+			int batchCounter = 0;
 			while ((line = br.readLine()) != null) {
+				batchCounter++;
 				final Matcher matcher = ACCESS_LOGS_PATTERN.matcher(line);
 				if (matcher.find()) {
 					String source_ip = matcher.group(1);
 					String userId = matcher.group(2);
 					String timestamp = matcher.group(3);
-					String httpMethod = matcher.group(4);
+					String httpMethodStr = matcher.group(4).toUpperCase();
+					Integer httpMethod = httpMethodStr.length() > 10 || !HTTP_METHOD_NAMES.contains(httpMethodStr) ?
+							null : HttpMethodEnum.valueOf(httpMethodStr).getValue();
 					String resource = matcher.group(5);
-					String httpVersion = matcher.group(6);
+//					String httpVersion = matcher.group(6);
 					String status = matcher.group(7);
 					Long size = matcher.group(8).equals("-") ? null : Long.parseLong(matcher.group(8));
 					String refer = matcher.group(9);
 					String userAgent = matcher.group(10);
 
 					Access access = new Access();
-					access.setTimestamp(toSqlTimestampFromAccessLog(timestamp));
-					access.setReferer(refer);
+					access.setSourceIp(source_ip);
 					access.setUserId(userId);
-					String requestKey = httpMethod + resource;
-					String responseKey = "" + status + size;
-					String sessionKey = source_ip + userAgent;
-					if (!requestMap.containsKey(requestKey)) {
-						Request request = new Request();
-						request.setHttpMethod(httpMethod.length() > 10 ? null : httpMethod);
-						request.setResource(resource);
-						requestMap.put(requestKey,request);
-					}
-					if (!responseMap.containsKey(responseKey)) {
-						Response response = new Response();
-						response.setSize(size);
-						response.setStatus(Integer.parseInt(status));
-						responseMap.put(responseKey, response);
-					}
-					if (!sessionMap.containsKey(sessionKey)) {
-						Session session = new Session();
-						session.setSourceIp(source_ip);
-						session.setUserAgent(userAgent);
-						sessionMap.put(sessionKey, session);
-					}
-					access.setRequest(requestMap.get(requestKey));
-					access.setResponse(responseMap.get(responseKey));
-					access.setSession(sessionMap.get(sessionKey));
-					accessList.add(access);
+					access.setTimestamp(toLocalDateTimeFromAccessLog(timestamp));
+					access.setHttpMethod(httpMethod);
+					access.setResource(resource);
+					access.setStatus(Integer.parseInt(status));
+					access.setSize(size);
+					access.setReferer(refer);
+					access.setUserAgent(userAgent);
+					access.setType("access");
+
+					logList.add(access);
 				} else {
 					logger.warn(String.format("Couldn't match line %s in %s with pattern %s", line, file.getName(), ACCESS_LOGS_PATTERN));
+				}
+				if (batchCounter == BATCH_SIZE) {
+					logRepository.saveAll(logList);
+					logList.clear();
+					batchCounter = 0;
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		requestRepository.saveAll(requestMap.values());
-		responseRepository.saveAll(responseMap.values());
-		sessionRepository.saveAll(sessionMap.values());
-		accessRepository.saveAll(accessList);
+		if (!logList.isEmpty()) {
+			logRepository.saveAll(logList);
+		}
 	}
 
-	private void parseHdfsInsertDB() {
-		List<Dataxceiver> dataxceiverList = new ArrayList<>();
-		List<Namesystem> namesystemList = new ArrayList<>();
-		parseDataXceiver(dataxceiverList);
-		parseFsNameSystem(namesystemList);
-		dataxceiverRepository.saveAll(dataxceiverList);
-		namesystemRepository.saveAll(namesystemList);
-	}
-
-	private void parseDataXceiver(List<Dataxceiver> dataxceiverList) {
+	private void parseDataXceiver() {
 		File file = new File(getClass().getClassLoader().getResource(HDFS_DATAXCEIVER_LOG_PATH).getFile());
+		List<Log> logList = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			String line;
+			int batchCounter = 0;
 			while ((line = br.readLine()) != null) {
+				batchCounter++;
 				String source_ip = null;
 				String type = null;
 				String timestamp = null;
@@ -200,8 +188,8 @@ public class LogDbApplication implements CommandLineRunner {
 						logger.warn(String.format("Couldn't match line %s in %s with pattern %s", line, file.getName(), RECEIVING_RECEIVED_PATTERN));
 					}
 				} else if (line.contains("received exception")
-							|| line.contains("Got exception")
-							|| line.contains("IOException")) {
+						|| line.contains("Got exception")
+						|| line.contains("IOException")) {
 					/*  NOOP
 					    Ignore lines that contain one of the following:
 					    "*received exception*" || "*Got exception*" || "*IOException*"
@@ -212,25 +200,37 @@ public class LogDbApplication implements CommandLineRunner {
 				// timestamp == null means ignored line
 				if (timestamp != null) {
 					Dataxceiver dataxceiver = new Dataxceiver();
-					dataxceiver.setTimestamp(toSqlTimestampFromHDFS(timestamp));
+					dataxceiver.setTimestamp(toLocalDateTimeFromHDFS(timestamp));
 					dataxceiver.setType(type);
 					dataxceiver.setSourceIp(source_ip);
 					dataxceiver.setSize(size);
 					dataxceiver.setBlockId(Long.parseLong(block_id));
 					dataxceiver.setDestinationIp(destination_ip);
-					dataxceiverList.add(dataxceiver);
+
+					logList.add(dataxceiver);
+					if (batchCounter == BATCH_SIZE) {
+						logRepository.saveAll(logList);
+						logList.clear();
+						batchCounter = 0;
+					}
 				}
+			}
+			if (!logList.isEmpty()) {
+				logRepository.saveAll(logList);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void parseFsNameSystem(List<Namesystem> namesystemList) {
+	private void parseFsNameSystem() {
 		File file = new File(getClass().getClassLoader().getResource(HDFS_FS_NAMESYSTEM_LOG_PATH).getFile());
+		List<Log> logList = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			String line;
+			int batchCounter = 0;
 			while ((line = br.readLine()) != null) {
+				batchCounter++;
 				String source_ip = null;
 				String type = null;
 				String timestamp = null;
@@ -260,26 +260,73 @@ public class LogDbApplication implements CommandLineRunner {
 						source_ip = matcher.group(2);
 //						String source_port = matcher.group(3);
 						block_id_list = Arrays
-											.stream(matcher.group(4).split("\\s+"))
-											.map(blk -> blk.replace("blk_", ""))
-											.collect(Collectors.toList());
+								.stream(matcher.group(4).split("\\s+"))
+								.map(blk -> blk.replace("blk_", ""))
+								.collect(Collectors.toList());
 					} else {
 						logger.warn(String.format("Couldn't match line %s in %s with pattern %s", line, file.getName(), DELETE_PATTERN));
 					}
 				} else {
 					logger.warn(String.format("Found unmatched line %s in %s", line, file.getName()));
 				}
-				Namesystem namesystem = new Namesystem();
-				namesystem.setTimestamp(toSqlTimestampFromHDFS(timestamp));
-				namesystem.setType(type);
-				namesystem.setSourceIp(source_ip);
-				namesystem.setSize(size);
-				namesystem.setBlockIds(block_id_list.stream().map(Long::parseLong).collect(Collectors.toList()));
-				namesystem.setDestinationIps(destination_ip_list);
-				namesystemList.add(namesystem);
+				Namesystem namesystemDocument = new Namesystem();
+				namesystemDocument.setTimestamp(toLocalDateTimeFromHDFS(timestamp));
+				namesystemDocument.setType(type);
+				namesystemDocument.setSourceIp(source_ip);
+				namesystemDocument.setSize(size);
+				namesystemDocument.setBlockIds(block_id_list.stream().map(Long::parseLong).collect(Collectors.toList()));
+				namesystemDocument.setDestinationIps(destination_ip_list);
+
+				logList.add(namesystemDocument);
+				if (batchCounter == BATCH_SIZE) {
+					logRepository.saveAll(logList);
+					logList.clear();
+					batchCounter = 0;
+				}
+			}
+			if (!logList.isEmpty()) {
+				logRepository.saveAll(logList);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void generateAdminData() {
+		Faker faker = new Faker();
+		Query query = new Query();
+		query.fields().include("_id");
+		List<ObjectId> objectIdList = mongoTemplate.find(query, Log.class)
+				.stream()
+				.map(Log::get_id)
+				.collect(Collectors.toList());
+		Collections.shuffle(objectIdList);
+		int dbSize = objectIdList.size();
+		int requiredSize = dbSize/3 + 1;
+		int upvoteSum = 0;
+		Random random = new Random();
+		List<Admin> adminList = new ArrayList<>();
+
+		while (true) {
+			int upvoteSize = random.nextInt(1000) + 1;
+
+			Admin admin = new Admin();
+			admin.setUsername(faker.name().username());
+			admin.setEmail(faker.internet().emailAddress());
+			admin.setPhoneNumber(faker.phoneNumber().phoneNumber());
+			List<ObjectId> adminObjectIdList = new ArrayList<>();
+			while (upvoteSize > 0) {
+				adminObjectIdList.add(objectIdList.get(upvoteSum));
+				upvoteSum++;
+				upvoteSize--;
+			}
+			admin.setUpvotes(adminObjectIdList);
+			adminList.add(admin);
+
+			if (upvoteSum > requiredSize) {
+				break;
+			}
+		}
+		adminRepository.saveAll(adminList);
 	}
 }
