@@ -6,7 +6,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import com.logdb.repository.ClientRepository;
 import com.logdb.dto.RoleDto;
 import com.logdb.dto.ClientDto;
 import com.logdb.mapper.ClientMapper;
