@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -107,11 +106,11 @@ public class LogController {
 
     /*11. Find all the block ids for which a given name has casted a vote for a log involving it.*/
 
-    @RequestMapping(value = "/blocks/in-upvoted-logs", method = RequestMethod.GET)
+/*    @RequestMapping(value = "/blocks/in-upvoted-logs", method = RequestMethod.GET)
     @ResponseBody
     List<Integer> blocksInUpvotedLogBy(@RequestParam("username") String username) {
         return logService.blocksInUpvotedLogBy(username);
-    }
+    }*/
 
     @RequestMapping(value = "/logs/create", method = RequestMethod.POST)
     void createOrUpdate(@RequestBody Log log) {
