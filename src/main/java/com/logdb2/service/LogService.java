@@ -2,11 +2,12 @@ package com.logdb2.service;
 
 import com.logdb2.dto.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 public interface LogService {
-    List<LogTypeCounterPairResponseDto> totalLogsPerTypeCreatedWithinTimeRangeDesc(Date start, Date stop);
+    List<LogTypeCounterPairResponseDto> totalLogsPerTypeCreatedWithinTimeRangeDesc(LocalDate start, LocalDate stop);
 
     List<RequestsPerDayCounterResponseDto> totalRequestsPerDayForTypeAndTimeRange(String logType, Date start, Date stop);
 

@@ -1,28 +1,31 @@
 package com.logdb2.controller;
 
-
 import com.logdb2.dto.*;
 import com.logdb2.service.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 @Controller
 public class LogController {
 
-
     @Autowired
     LogService logService;
 
-    /*1. Find the total logs per type that were created within a specified time range and sort them in
-        a descending order. Please note that individual files may log actions of more than one type.*/
-
+    /**  1. Find the total logs per type that were created within a specified time range and sort them in
+     *   a descending order. Please note that individual files may log actions of more than one type.
+     *   e.g. http://localhost:9090/logs/total/per-type/created?start=2015-01-13&stop=2020-01-01
+     */
     @RequestMapping(value = "/logs/total/per-type/created", method = RequestMethod.GET)
     @ResponseBody
-    List<LogTypeCounterPairResponseDto> totalLogsPerTypeCreatedWithinTimeRangeDesc(@RequestParam("start") Date start, @RequestParam("stop") Date stop) {
+    List<LogTypeCounterPairResponseDto> totalLogsPerTypeCreatedWithinTimeRangeDesc(
+            @RequestParam(name = "start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+            @RequestParam(name = "stop") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate stop) {
         return logService.totalLogsPerTypeCreatedWithinTimeRangeDesc(start, stop);
     }
 
