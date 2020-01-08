@@ -3,12 +3,24 @@ package com.logdb2.service;
 
 import com.logdb2.document.Log;
 import com.logdb2.dto.*;
-import com.logdb2.repository.LogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
+import com.logdb2.repository.LogRepository;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort;
 
 @Component
 public class LogServiceImpl implements LogService {
@@ -16,9 +28,25 @@ public class LogServiceImpl implements LogService {
     @Autowired
     LogRepository logRepository;
 
+    private static final String LOGS_COLLECTION_NAME = "logs";
+
+    @Autowired
+    MongoTemplate mongoTemplate;
+
     @Override
-    public List<LogTypeCounterPairResponseDto> totalLogsPerTypeCreatedWithinTimeRangeDesc(Date start, Date stop) {
-        return null;
+    public List<LogTypeCounterPairResponseDto> totalLogsPerTypeCreatedWithinTimeRangeDesc(LocalDate start, LocalDate stop) {
+        Aggregation agg = newAggregation(
+                match(Criteria.where("timestamp")
+                        .gte(start)
+                        .lt(stop)),
+                group("type").count().as("numberOfLogs"),
+                project("numberOfLogs").and("type").previousOperation(),
+                sort(Sort.Direction.DESC, "numberOfLogs")
+        );
+
+        AggregationResults<LogTypeCounterPairResponseDto> groupResults
+                = mongoTemplate.aggregate(agg, LOGS_COLLECTION_NAME, LogTypeCounterPairResponseDto.class);
+        return groupResults.getMappedResults();
     }
 
     @Override

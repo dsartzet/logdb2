@@ -27,6 +27,5 @@ dependencies {
 
 	implementation 'com.github.javafaker:javafaker:1.0.1'
 	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 }

@@ -2,7 +2,7 @@ package com.logdb2.dto;
 
 public class LogTypeCounterPairResponseDto {
     private String type;
-    private Integer numberOfLogs;
+    private long numberOfLogs;
 
     public String getType() {
         return type;
@@ -12,11 +12,11 @@ public class LogTypeCounterPairResponseDto {
         this.type = type;
     }
 
-    public Integer getNumberOfLogs() {
+    public long getNumberOfLogs() {
         return numberOfLogs;
     }
 
-    public void setNumberOfLogs(Integer numberOfLogs) {
+    public void setNumberOfLogs(long numberOfLogs) {
         this.numberOfLogs = numberOfLogs;
     }
 }
