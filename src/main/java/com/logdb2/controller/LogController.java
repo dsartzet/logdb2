@@ -1,6 +1,7 @@
 package com.logdb2.controller;
 
 
+import com.logdb2.document.Log;
 import com.logdb2.dto.*;
 import com.logdb2.service.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,13 +111,8 @@ public class LogController {
     }
 
     @RequestMapping(value = "/logs/create", method = RequestMethod.POST)
-    void createOrUpdate(@RequestBody LogDto logDto) {
-        logService.createOrUpdate(logDto);
-    }
-
-    @RequestMapping(value = "/logs/{logId}/{clientId}/upvote", method = RequestMethod.POST)
-    void upvote(@PathVariable long logId, @PathVariable long clientId) {
-        logService.upvote(clientId, logId);
+    void createOrUpdate(@RequestBody Log log) {
+        logService.createOrUpdate(log);
     }
 
 }

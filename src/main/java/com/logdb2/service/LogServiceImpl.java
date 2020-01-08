@@ -1,7 +1,10 @@
 package com.logdb2.service;
 
 
+import com.logdb2.document.Log;
 import com.logdb2.dto.*;
+import com.logdb2.repository.LogRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -9,6 +12,10 @@ import java.util.List;
 
 @Component
 public class LogServiceImpl implements LogService {
+
+    @Autowired
+    LogRepository logRepository;
+
     @Override
     public List<LogTypeCounterPairResponseDto> totalLogsPerTypeCreatedWithinTimeRangeDesc(Date start, Date stop) {
         return null;
@@ -65,12 +72,7 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public void createOrUpdate(LogDto logDto) {
-
-    }
-
-    @Override
-    public void upvote(long clientId, long logId) {
-
+    public void createOrUpdate(Log log) {
+        logRepository.save(log);
     }
 }

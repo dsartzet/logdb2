@@ -1,5 +1,6 @@
 package com.logdb2.service;
 
+import com.logdb2.document.Log;
 import com.logdb2.dto.*;
 
 import java.util.Date;
@@ -28,8 +29,6 @@ public interface LogService {
 
     List<Integer> blocksInUpvotedLogBy(String username);
 
-    void createOrUpdate(LogDto logDto);
-
-    void upvote(long clientId, long logId);
+    void createOrUpdate(Log log);
 }
 
