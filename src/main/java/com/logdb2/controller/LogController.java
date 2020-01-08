@@ -1,8 +1,10 @@
 package com.logdb2.controller;
 
+import com.logdb2.document.Access;
+import com.logdb2.document.Dataxceiver;
+import com.logdb2.document.Namesystem;
 import com.logdb2.result.*;
 import com.logdb2.service.LogService;
-import com.logdb2.document.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -112,8 +114,18 @@ public class LogController {
         return logService.blocksInUpvotedLogBy(username);
     }*/
 
-    @RequestMapping(value = "/logs/create", method = RequestMethod.POST)
-    void createOrUpdate(@RequestBody Log log) {
+    @RequestMapping(value = "/logs/access/", method = RequestMethod.POST)
+    void accessCreateOrUpdate(@RequestBody Access log) {
+        logService.createOrUpdate(log);
+    }
+
+    @RequestMapping(value = "/logs/dataxceiver/", method = RequestMethod.POST)
+    void dataxceiverCreateOrUpdate(@RequestBody Dataxceiver log) {
+        logService.createOrUpdate(log);
+    }
+
+    @RequestMapping(value = "/logs/namesystem/", method = RequestMethod.POST)
+    void namesystemCreateOrUpdate(@RequestBody Namesystem log) {
         logService.createOrUpdate(log);
     }
 
