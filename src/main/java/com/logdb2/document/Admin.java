@@ -4,6 +4,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Document(collection = "admin")
@@ -14,6 +15,7 @@ public class Admin {
     private String username;
     private String email;
     private String phoneNumber;
+    private LocalDateTime timestamp;
     private List<ObjectId> upvotes;
 
     public String get_id() {
@@ -46,6 +48,14 @@ public class Admin {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 
     public List<ObjectId> getUpvotes() {

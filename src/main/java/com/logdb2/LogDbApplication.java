@@ -24,8 +24,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,6 +57,7 @@ public class LogDbApplication implements CommandLineRunner {
 	private static final Pattern SERVED_PATTERN = Pattern.compile(SERVED_REGEX);
 	private static final Pattern REPLICATE_PATTERN = Pattern.compile(REPLICATE_REGEX);
 	private static final Pattern DELETE_PATTERN = Pattern.compile(DELETE_REGEX);
+	private static final int LOCAL_ZONEID = 2;
 	private static final int BATCH_SIZE = 300_000;
 	private static final List<String> HTTP_METHOD_NAMES = Stream.of(HttpMethodEnum.values()).map(HttpMethodEnum::name).collect(Collectors.toList());
 
@@ -83,13 +84,13 @@ public class LogDbApplication implements CommandLineRunner {
 	}
 
 	private LocalDateTime toLocalDateTimeFromAccessLog(String timeStr) {
-		ZonedDateTime date = ZonedDateTime.parse(timeStr, ACCESS_LOGS_TIME_FORMATTER);
+		OffsetDateTime date = OffsetDateTime.parse(timeStr, ACCESS_LOGS_TIME_FORMATTER);
 		// apply zone offset in UTC timezone (mongodb does not keep timezones)
-		return LocalDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
+		return LocalDateTime.ofInstant(date.plusHours(LOCAL_ZONEID).toInstant(), ZoneOffset.UTC);
 	}
 
 	private LocalDateTime toLocalDateTimeFromHDFS(String timeStr) {
-		return LocalDateTime.parse(timeStr, HDFS_TIME_FORMATTER);
+		return LocalDateTime.parse(timeStr, HDFS_TIME_FORMATTER).plusHours(LOCAL_ZONEID);
 	}
 
 	private void parseAccessInsertDB() {
@@ -112,7 +113,7 @@ public class LogDbApplication implements CommandLineRunner {
 //					String httpVersion = matcher.group(6);
 					String status = matcher.group(7);
 					Long size = matcher.group(8).equals("-") ? null : Long.parseLong(matcher.group(8));
-					String refer = matcher.group(9);
+					String referer = matcher.group(9).equals("-") ? null : matcher.group(9);
 					String userAgent = matcher.group(10);
 
 					Access access = new Access();
@@ -123,7 +124,7 @@ public class LogDbApplication implements CommandLineRunner {
 					access.setResource(resource);
 					access.setStatus(Integer.parseInt(status));
 					access.setSize(size);
-					access.setReferer(refer);
+					access.setReferer(referer);
 					access.setUserAgent(userAgent);
 					access.setType("access");
 
@@ -300,33 +301,41 @@ public class LogDbApplication implements CommandLineRunner {
 				.stream()
 				.map(Log::get_id)
 				.collect(Collectors.toList());
-		Collections.shuffle(objectIdList);
 		int dbSize = objectIdList.size();
 		int requiredSize = dbSize/3 + 1;
-		int upvoteSum = 0;
 		Random random = new Random();
-		List<Admin> adminList = new ArrayList<>();
 
-		while (true) {
-			int upvoteSize = random.nextInt(1000) + 1;
+		for (int i=0; i<10; i++) {
+			Collections.shuffle(objectIdList);
+			int upvoteSum = 0;
+			List<Admin> adminList = new ArrayList<>();
 
-			Admin admin = new Admin();
-			admin.setUsername(faker.name().username());
-			admin.setEmail(faker.internet().emailAddress());
-			admin.setPhoneNumber(faker.phoneNumber().phoneNumber());
-			List<ObjectId> adminObjectIdList = new ArrayList<>();
-			while (upvoteSize > 0) {
-				adminObjectIdList.add(objectIdList.get(upvoteSum));
-				upvoteSum++;
-				upvoteSize--;
+			while (true) {
+				int upvoteSize = random.nextInt(1000) + 1;
+
+				Admin admin = new Admin();
+				admin.setUsername(faker.name().username());
+				admin.setEmail(faker.internet().emailAddress());
+				admin.setPhoneNumber(faker.phoneNumber().phoneNumber());
+				LocalDateTime localDateTime = LocalDateTime.of(
+						2020, 1, random.nextInt(31) + 1,
+						LOCAL_ZONEID,0,0,0
+				);
+				admin.setTimestamp(localDateTime);
+				List<ObjectId> adminObjectIdList = new ArrayList<>();
+				while (upvoteSize > 0) {
+					adminObjectIdList.add(objectIdList.get(upvoteSum));
+					upvoteSum++;
+					upvoteSize--;
+				}
+				admin.setUpvotes(adminObjectIdList);
+				adminList.add(admin);
+
+				if (upvoteSum > requiredSize) {
+					break;
+				}
 			}
-			admin.setUpvotes(adminObjectIdList);
-			adminList.add(admin);
-
-			if (upvoteSum > requiredSize) {
-				break;
-			}
+			adminRepository.saveAll(adminList);
 		}
-		adminRepository.saveAll(adminList);
 	}
 }
