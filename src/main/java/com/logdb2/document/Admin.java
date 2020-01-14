@@ -16,7 +16,7 @@ public class Admin {
     private String email;
     private String phoneNumber;
     private LocalDateTime timestamp;
-    private List<ObjectId> upvotes;
+    private List<Upvote> upvotes;
 
     public String get_id() {
         return _id.toHexString();
@@ -58,11 +58,11 @@ public class Admin {
         this.timestamp = timestamp;
     }
 
-    public List<ObjectId> getUpvotes() {
+    public List<Upvote> getUpvotes() {
         return upvotes;
     }
 
-    public void setUpvotes(List<ObjectId> upvotes) {
+    public void setUpvotes(List<Upvote> upvotes) {
         this.upvotes = upvotes;
     }
 }

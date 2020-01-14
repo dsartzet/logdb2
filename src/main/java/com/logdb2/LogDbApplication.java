@@ -1,12 +1,7 @@
 package com.logdb2;
 
 import com.github.javafaker.Faker;
-import com.logdb2.document.Access;
-import com.logdb2.document.Admin;
-import com.logdb2.document.Dataxceiver;
-import com.logdb2.document.HttpMethodEnum;
-import com.logdb2.document.Log;
-import com.logdb2.document.Namesystem;
+import com.logdb2.document.*;
 import com.logdb2.repository.AdminRepository;
 import com.logdb2.repository.LogRepository;
 import org.bson.types.ObjectId;
@@ -27,11 +22,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -322,9 +313,12 @@ public class LogDbApplication implements CommandLineRunner {
 						LOCAL_ZONEID,0,0,0
 				);
 				admin.setTimestamp(localDateTime);
-				List<ObjectId> adminObjectIdList = new ArrayList<>();
+				List<Upvote> adminObjectIdList = new ArrayList<>();
 				while (upvoteSize > 0) {
-					adminObjectIdList.add(objectIdList.get(upvoteSum));
+					Optional<Log> log = logRepository.findById(objectIdList.get(upvoteSum));
+					adminObjectIdList.add(new Upvote(objectIdList.get(upvoteSum), log.get().getSourceIp()));
+					log.get().getUpvoters().add(new Upvoter(admin.getUsername(), admin.getEmail()));
+					logRepository.save(log.get());
 					upvoteSum++;
 					upvoteSize--;
 				}

@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Document(collection = "logs")
 public class Log {
@@ -15,6 +16,7 @@ public class Log {
     private String type;
     private Long size;
     private String sourceIp;
+    private List<Upvoter> upvoters;
 
     public ObjectId get_id() {
         return _id;
@@ -54,5 +56,13 @@ public class Log {
 
     public void setSourceIp(String sourceIp) {
         this.sourceIp = sourceIp;
+    }
+
+    public List<Upvoter> getUpvoters() {
+        return upvoters;
+    }
+
+    public void setUpvoters(List<Upvoter> upvoters) {
+        this.upvoters = upvoters;
     }
 }
