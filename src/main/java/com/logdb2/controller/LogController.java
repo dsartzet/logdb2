@@ -105,7 +105,25 @@ public class LogController {
         return  logService.fiftyMostUpvotedLogsFor(date);
     }
 
+
+
+
     /*8. Find the fifty most active administrators, with regard to the total number of upvotes.*/
+
+    /*
+    db.admin.aggregate
+    ([
+    {$unwind: "$upvotes"},
+    {$group: {_id:"$_id",
+            username: {$first: '$username'},
+            email : {$first: '$email'},
+            phoneNumber : {$first: '$phoneNumber'},
+            upvotes :{$push: '$upvotes'},
+            _class : {$first: '$_class'},
+      size: {$sum:1}}},
+    {$sort:{size:-1}}
+    ]);
+*/
 
 //    @RequestMapping(value = "/admins/fifty-most-active", method = RequestMethod.GET)
 //    @ResponseBody
@@ -115,6 +133,24 @@ public class LogController {
 
     /*9. Find the top fifty administrators, with regard to the total number of source IPs for which
         they have upvoted logs.*/
+
+    //wip
+    /*db.admin.aggregate
+([
+    {$unwind: "$upvotes"},
+    {$lookup:
+        {
+            from: "logs",
+            localField: "upvotes",
+            foreignField: "_id",
+            as: "upvotedlog"
+        }
+    },
+    {$unwind: "$upvotedlog"},
+    {$project: {_id: "$_id", username: "$username", email: "$email", phoneNumber: "$phoneNumber", _class: "$_class", sourceIp: "$upvotedlog.sourceIp"}},
+    { $group: { _id: '$_id', data: { $addToSet: '$upvotedlog.sourceIp' } } }
+
+]);*/
 
     // TODO change request mapping value
 //    @RequestMapping(value = "/admins/most-upvotes-ips/top-fifty", method = RequestMethod.GET)
