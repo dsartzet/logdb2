@@ -119,6 +119,7 @@ public class LogDbApplication implements CommandLineRunner {
 					access.setUserAgent(userAgent);
 					access.setType("access");
 
+					access.setUpvoters(new ArrayList<>());
 					logList.add(access);
 				} else {
 					logger.warn(String.format("Couldn't match line %s in %s with pattern %s", line, file.getName(), ACCESS_LOGS_PATTERN));
@@ -199,6 +200,7 @@ public class LogDbApplication implements CommandLineRunner {
 					dataxceiver.setBlockId(Long.parseLong(block_id));
 					dataxceiver.setDestinationIp(destination_ip);
 
+					dataxceiver.setUpvoters(new ArrayList<>());
 					logList.add(dataxceiver);
 					if (batchCounter == BATCH_SIZE) {
 						logRepository.saveAll(logList);
@@ -269,6 +271,7 @@ public class LogDbApplication implements CommandLineRunner {
 				namesystemDocument.setBlockIds(block_id_list.stream().map(Long::parseLong).collect(Collectors.toList()));
 				namesystemDocument.setDestinationIps(destination_ip_list);
 
+				namesystemDocument.setUpvoters(new ArrayList<>());
 				logList.add(namesystemDocument);
 				if (batchCounter == BATCH_SIZE) {
 					logRepository.saveAll(logList);
@@ -300,6 +303,7 @@ public class LogDbApplication implements CommandLineRunner {
 			Collections.shuffle(objectIdList);
 			int upvoteSum = 0;
 			List<Admin> adminList = new ArrayList<>();
+			Map<ObjectId, Log> logMap = new HashMap<>();
 
 			while (true) {
 				int upvoteSize = random.nextInt(1000) + 1;
@@ -315,10 +319,13 @@ public class LogDbApplication implements CommandLineRunner {
 				admin.setTimestamp(localDateTime);
 				List<Upvote> adminObjectIdList = new ArrayList<>();
 				while (upvoteSize > 0) {
-					Optional<Log> log = logRepository.findById(objectIdList.get(upvoteSum));
-					adminObjectIdList.add(new Upvote(objectIdList.get(upvoteSum), log.get().getSourceIp()));
-					log.get().getUpvoters().add(new Upvoter(admin.getUsername(), admin.getEmail()));
-					logRepository.save(log.get());
+					Log log = logMap.get(objectIdList.get(upvoteSum));
+					log = Objects.isNull(log) ? logRepository.findById(objectIdList.get(upvoteSum)).get() : log;
+					if(Objects.nonNull(log)) {
+						adminObjectIdList.add(new Upvote(objectIdList.get(upvoteSum), log.getSourceIp()));
+						log.getUpvoters().add(new Upvoter(admin.getUsername(), admin.getEmail()));
+						logMap.put(objectIdList.get(upvoteSum), log);
+					}
 					upvoteSum++;
 					upvoteSize--;
 				}
@@ -330,6 +337,7 @@ public class LogDbApplication implements CommandLineRunner {
 				}
 			}
 			adminRepository.saveAll(adminList);
+			logRepository.saveAll(logMap.values());
 		}
 	}
 }
