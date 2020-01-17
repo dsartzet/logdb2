@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOptions;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Component;
 
@@ -135,7 +136,6 @@ public class LogServiceImpl implements LogService {
         return groupResults.getMappedResults();
     }
 
-
     @Override
     public List<LogBlockIdResult> blocksReplicatedAndServedSameDay() {
         return null;
@@ -158,29 +158,41 @@ public class LogServiceImpl implements LogService {
                 = mongoTemplate.aggregate(agg, ADMIN_COLLECTION_NAME, LogIdTotalResult.class);
         return groupResults.getMappedResults();
     }
-/*
-    @Override
-    public List<ClientDto> mostUpvotesGiven() {
-        return null;
-    }
+
+
+        /*db.getCollection('logs').aggregate
+([
+    {$unwind: "$blockIds"},
+     {$unwind: "$upvoters"},
+     { $match : { "upvoters.username" : "matt.mertz" } } ] )*/
 
     @Override
-    public List<ClientDto> mostUpvotesInDifferentIps() {
-        return null;
+    public List<Long> blocksInUpvotedLogBy(String username) {
+        Aggregation agg = newAggregation(
+                unwind("blockIds"),
+                unwind("upvoters"),
+                match(Criteria.where("upvoters.username").is(username))).withOptions(AGGREGATION_OPTIONS);
+
+        AggregationResults<Long> groupResults
+                = mongoTemplate.aggregate(agg, LOGS_COLLECTION_NAME, Long.class);
+        return groupResults.getMappedResults();
     }
 
-    @Override
-    public List<LogDto> logsWithSameEmailUpvotes() {
-        return null;
-    }
-
-    @Override
-    public List<Integer> blocksInUpvotedLogBy(String username) {
-        return null;
-    }
-*/
     @Override
     public void createOrUpdate(Log log) {
         logRepository.save(log);
+    }
+
+    @Override
+    public List<Log> sameEmailDifferentUsernamesUpvotedLogs() {
+        Aggregation agg = newAggregation(
+                unwind("upvoters"),
+                project("_id").and("upvoters.email").as("email").and("upvoters.email").as("email"),
+                        group(Fields.fields("email","_id")).addToSet("username").as("data"),
+                        match(Criteria.where("data").gte(2))).withOptions(AGGREGATION_OPTIONS);
+
+        AggregationResults<Log> groupResults
+                = mongoTemplate.aggregate(agg, LOGS_COLLECTION_NAME, Log.class);
+        return groupResults.getMappedResults();
     }
 }

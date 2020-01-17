@@ -2,6 +2,7 @@ package com.logdb2.controller;
 
 import com.logdb2.document.Access;
 import com.logdb2.document.Dataxceiver;
+import com.logdb2.document.Log;
 import com.logdb2.document.Namesystem;
 import com.logdb2.result.*;
 import com.logdb2.service.LogService;
@@ -99,82 +100,21 @@ public class LogController {
      */
     @RequestMapping(value = "/logs/fifty-most-upvoted", method = RequestMethod.GET)
     @ResponseBody
-    List<LogIdTotalResult> mostUpvotedLogsFor(
-            @RequestParam(name = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
-    ) {
+    List<LogIdTotalResult> mostUpvotedLogsFor(@RequestParam(name = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return  logService.fiftyMostUpvotedLogsFor(date);
     }
 
-
-
-
-    /*8. Find the fifty most active administrators, with regard to the total number of upvotes.*/
-
-    /*
-    db.admin.aggregate
-    ([
-    {$unwind: "$upvotes"},
-    {$group: {_id:"$_id",
-            username: {$first: '$username'},
-            email : {$first: '$email'},
-            phoneNumber : {$first: '$phoneNumber'},
-            upvotes :{$push: '$upvotes'},
-            _class : {$first: '$_class'},
-      size: {$sum:1}}},
-    {$sort:{size:-1}}
-    ]);
-*/
-
-//    @RequestMapping(value = "/admins/fifty-most-active", method = RequestMethod.GET)
-//    @ResponseBody
-//    List<ClientDto> mostUpvotesGiven() {
-//        return logService.mostUpvotesGiven();
-//    }
-
-    /*9. Find the top fifty administrators, with regard to the total number of source IPs for which
-        they have upvoted logs.*/
-
-    //wip
-    /*db.admin.aggregate
-([
-    {$unwind: "$upvotes"},
-    {$lookup:
-        {
-            from: "logs",
-            localField: "upvotes",
-            foreignField: "_id",
-            as: "upvotedlog"
-        }
-    },
-    {$unwind: "$upvotedlog"},
-    {$project: {_id: "$_id", username: "$username", email: "$email", phoneNumber: "$phoneNumber", _class: "$_class", sourceIp: "$upvotedlog.sourceIp"}},
-    { $group: { _id: '$_id', data: { $addToSet: '$upvotedlog.sourceIp' } } }
-
-]);*/
-
-    // TODO change request mapping value
-//    @RequestMapping(value = "/admins/most-upvotes-ips/top-fifty", method = RequestMethod.GET)
-//    @ResponseBody
-//    List<ClientDto> mostUpvotesInDifferentIps() {
-//    return logService.mostUpvotesInDifferentIps();
-//    }
-
-    /*10. Find all logs for which the same e-mail has been used for more than one usernames when
-        casting an upvote.*/
-
-//    @RequestMapping(value = "/admins/most-upvotes-ips/top-fifty", method = RequestMethod.GET)
-//    @ResponseBody
-//    List<LogDto> logsWithSameEmailUpvotes() {
-//        return logService.logsWithSameEmailUpvotes();
-//    }
-
-    /*11. Find all the block ids for which a given name has casted a vote for a log involving it.*/
-
-/*    @RequestMapping(value = "/blocks/in-upvoted-logs", method = RequestMethod.GET)
+    @RequestMapping(value = "/logs/same-email-different-usernames-logs", method = RequestMethod.GET)
     @ResponseBody
-    List<Integer> blocksInUpvotedLogBy(@RequestParam("username") String username) {
+    List<Log> sameEmailDifferentUsernamesUpvotedLogs() {
+        return  logService.sameEmailDifferentUsernamesUpvotedLogs();
+    }
+
+    @RequestMapping(value = "/blocks/in-upvoted-logs", method = RequestMethod.GET)
+    @ResponseBody
+    List<Long> blocksInUpvotedLogBy(@RequestParam("username") String username) {
         return logService.blocksInUpvotedLogBy(username);
-    }*/
+    }
 
     @RequestMapping(value = "/logs/access/", method = RequestMethod.POST)
     void accessCreateOrUpdate(@RequestBody Access log) {

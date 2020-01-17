@@ -299,7 +299,7 @@ public class LogDbApplication implements CommandLineRunner {
 		int requiredSize = dbSize/3 + 1;
 		Random random = new Random();
 
-		for (int i=0; i<10; i++) {
+		for (int i=0; i<1; i++) {
 			Collections.shuffle(objectIdList);
 			int upvoteSum = 0;
 			List<Admin> adminList = new ArrayList<>();

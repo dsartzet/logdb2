@@ -27,14 +27,10 @@ public interface LogService {
 
     List<LogIdTotalResult> fiftyMostUpvotedLogsFor(LocalDate date);
 
- //   List<ClientDto> mostUpvotesGiven();
-
- //   List<ClientDto> mostUpvotesInDifferentIps();
-
-  // List<LogDto> logsWithSameEmailUpvotes();
-
-  //  List<Integer> blocksInUpvotedLogBy(String username);
+    List<Long> blocksInUpvotedLogBy(String username);
 
     void createOrUpdate(Log log);
+
+    List<Log> sameEmailDifferentUsernamesUpvotedLogs();
 }
 
