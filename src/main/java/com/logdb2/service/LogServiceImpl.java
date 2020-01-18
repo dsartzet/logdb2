@@ -4,13 +4,7 @@ package com.logdb2.service;
 import com.logdb2.document.HttpMethodEnum;
 import com.logdb2.document.Log;
 import com.logdb2.repository.LogRepository;
-import com.logdb2.result.LogBlockIdResult;
-import com.logdb2.result.LogDateTotalResult;
-import com.logdb2.result.LogHttpMethodResult;
-import com.logdb2.result.LogIdTotalResult;
-import com.logdb2.result.LogRefererResult;
-import com.logdb2.result.LogSourceIpTotalResult;
-import com.logdb2.result.LogTypeTotalResult;
+import com.logdb2.result.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -159,22 +153,16 @@ public class LogServiceImpl implements LogService {
         return groupResults.getMappedResults();
     }
 
-
-        /*db.getCollection('logs').aggregate
-([
-    {$unwind: "$blockIds"},
-     {$unwind: "$upvoters"},
-     { $match : { "upvoters.username" : "matt.mertz" } } ] )*/
-
     @Override
-    public List<Long> blocksInUpvotedLogBy(String username) {
+    public List<LogBlockIdResult> blocksInUpvotedLogBy(String username) {
         Aggregation agg = newAggregation(
                 unwind("blockIds"),
                 unwind("upvoters"),
+                project("upvoters").and("blockId").as("blockId").and("blockIds").as("blockId"),
                 match(Criteria.where("upvoters.username").is(username))).withOptions(AGGREGATION_OPTIONS);
 
-        AggregationResults<Long> groupResults
-                = mongoTemplate.aggregate(agg, LOGS_COLLECTION_NAME, Long.class);
+        AggregationResults<LogBlockIdResult> groupResults
+                = mongoTemplate.aggregate(agg, LOGS_COLLECTION_NAME, LogBlockIdResult.class);
         return groupResults.getMappedResults();
     }
 
@@ -184,15 +172,16 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public List<Log> sameEmailDifferentUsernamesUpvotedLogs() {
+    public List<SameEmailDifferentUsernamesUpvotedLogsResult> sameEmailDifferentUsernamesUpvotedLogs() {
         Aggregation agg = newAggregation(
                 unwind("upvoters"),
-                project("_id").and("upvoters.email").as("email").and("upvoters.email").as("email"),
-                        group(Fields.fields("email","_id")).addToSet("username").as("data"),
-                        match(Criteria.where("data").gte(2))).withOptions(AGGREGATION_OPTIONS);
+                project("_id").and("upvoters.email").as("email").and("upvoters.username").as("username"),
+                        group(Fields.fields("email","_id")).addToSet("username").as("usernames"),
+                        project("_id").and("email").as("email").and("usernames").size().as("size"),
+                        match(Criteria.where("size").gte(2))).withOptions(AGGREGATION_OPTIONS);
 
-        AggregationResults<Log> groupResults
-                = mongoTemplate.aggregate(agg, LOGS_COLLECTION_NAME, Log.class);
+        AggregationResults<SameEmailDifferentUsernamesUpvotedLogsResult> groupResults
+                = mongoTemplate.aggregate(agg, LOGS_COLLECTION_NAME, SameEmailDifferentUsernamesUpvotedLogsResult.class);
         return groupResults.getMappedResults();
     }
 }

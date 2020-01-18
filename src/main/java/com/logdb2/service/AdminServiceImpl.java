@@ -1,9 +1,13 @@
 package com.logdb2.service;
 
 import com.logdb2.document.Admin;
+import com.logdb2.document.Log;
 import com.logdb2.document.Upvote;
+import com.logdb2.document.Upvoter;
 import com.logdb2.repository.AdminRepository;
 import com.logdb2.repository.LogRepository;
+import com.logdb2.result.MostUpvotesInDifferentIpsResult;
+import com.logdb2.result.MostUpvotesResult;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -35,7 +39,7 @@ public class AdminServiceImpl implements AdminService {
     MongoTemplate mongoTemplate;
 
     @Override
-    public void upvote(long adminId, ObjectId logId) throws ValidationException {
+    public void upvote(ObjectId adminId, ObjectId logId) throws ValidationException {
         Optional<Admin> adminOptional= adminRepository.findById(adminId);
         if(adminOptional.isPresent()) {
             Admin admin = adminOptional.get();
@@ -43,32 +47,34 @@ public class AdminServiceImpl implements AdminService {
             if (upvotes.stream().map(Upvote::getLog).collect(Collectors.toList()).contains(logId)) {
                 throw new ValidationException("Can not upvote same log multiple times.");
             }
-            upvotes.add(new Upvote(logId, logRepository.findById(logId).get().getSourceIp()));
+            Log log = logRepository.findById(logId).get();
+            upvotes.add(new Upvote(logId, log.getSourceIp()));
+            log.getUpvoters().add(new Upvoter(admin.getUsername(), admin.getEmail()));
             admin.setUpvotes(upvotes);
             adminRepository.save(admin);
+            logRepository.save(log);
         }
     }
 
     @Override
-    public List<Admin> mostUpvotesGiven() {
+    public List<MostUpvotesResult> mostUpvotesGiven() {
         Aggregation agg = newAggregation(
                 unwind("upvotes"),
                 group("_id")
                     .first("username").as("username")
                     .first("email").as("email")
                     .first("phoneNumber").as("phoneNumber")
-                    .first("_class").as("_class")
                     .push("upvotes.log").as("upvotes")
-                    .sum("1").as("size"),
+                    .count().as("size"),
                 sort(Sort.Direction.DESC, "size"),
                 limit(50))
                 .withOptions(AGGREGATION_OPTIONS);
-        AggregationResults<Admin> groupResults = mongoTemplate.aggregate(agg, ADMIN_COLLECTION_NAME, Admin.class);
+        AggregationResults<MostUpvotesResult> groupResults = mongoTemplate.aggregate(agg, ADMIN_COLLECTION_NAME, MostUpvotesResult.class);
         return groupResults.getMappedResults();
     }
 
     @Override
-    public List<Admin> mostUpvotesInDifferentIps() {
+    public List<MostUpvotesInDifferentIpsResult> mostUpvotesInDifferentIps() {
         Aggregation agg = newAggregation(
                 unwind("upvotes"),
                 group("_id")
@@ -77,7 +83,7 @@ public class AdminServiceImpl implements AdminService {
                 sort(Sort.Direction.DESC, "set_size"),
                 limit(50))
                 .withOptions(AGGREGATION_OPTIONS);
-        AggregationResults<Admin> groupResults = mongoTemplate.aggregate(agg, ADMIN_COLLECTION_NAME, Admin.class);
+        AggregationResults<MostUpvotesInDifferentIpsResult> groupResults = mongoTemplate.aggregate(agg, ADMIN_COLLECTION_NAME, MostUpvotesInDifferentIpsResult.class);
         return groupResults.getMappedResults();
     }
 }

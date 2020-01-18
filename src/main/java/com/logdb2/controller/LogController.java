@@ -2,7 +2,6 @@ package com.logdb2.controller;
 
 import com.logdb2.document.Access;
 import com.logdb2.document.Dataxceiver;
-import com.logdb2.document.Log;
 import com.logdb2.document.Namesystem;
 import com.logdb2.result.*;
 import com.logdb2.service.LogService;
@@ -92,7 +91,6 @@ public class LogController {
         return logService.blocksReplicatedAndServedSameDay();
     }
 
-    /*7. Find the fifty most upvoted logs for a specific day.*/
 
     /**
      * 7. Find the fifty most upvoted logs for a specific day.
@@ -104,18 +102,34 @@ public class LogController {
         return  logService.fiftyMostUpvotedLogsFor(date);
     }
 
+    /**
+     * 10. Find all logs for which the same e-mail has been used for more than one usernames when
+     *     casting an upvote.
+     * e.g. http://localhost:9090/logs/same-email-different-usernames-logs
+     * */
     @RequestMapping(value = "/logs/same-email-different-usernames-logs", method = RequestMethod.GET)
     @ResponseBody
-    List<Log> sameEmailDifferentUsernamesUpvotedLogs() {
+    List<SameEmailDifferentUsernamesUpvotedLogsResult> sameEmailDifferentUsernamesUpvotedLogs() {
         return  logService.sameEmailDifferentUsernamesUpvotedLogs();
     }
 
+
+    /**
+     *     11. Find all the block ids for which a given name has casted
+     *     a vote for a log involving it.
+     * e.g. http://localhost:9090/blocks/in-upvoted-logs?username=domingo.greenholt
+     */
     @RequestMapping(value = "/blocks/in-upvoted-logs", method = RequestMethod.GET)
     @ResponseBody
-    List<Long> blocksInUpvotedLogBy(@RequestParam("username") String username) {
+    List<LogBlockIdResult> blocksInUpvotedLogBy(@RequestParam("username") String username) {
         return logService.blocksInUpvotedLogBy(username);
     }
 
+
+    /**
+     * etc. Create or update log
+     * e.g. http://localhost:9090/logs/access/
+     * */
     @RequestMapping(value = "/logs/access/", method = RequestMethod.POST)
     void accessCreateOrUpdate(@RequestBody Access log) {
         logService.createOrUpdate(log);
@@ -130,5 +144,4 @@ public class LogController {
     void namesystemCreateOrUpdate(@RequestBody Namesystem log) {
         logService.createOrUpdate(log);
     }
-
 }

@@ -1,12 +1,7 @@
 package com.logdb2.service;
 
 import com.logdb2.document.Log;
-import com.logdb2.result.LogBlockIdResult;
-import com.logdb2.result.LogDateTotalResult;
-import com.logdb2.result.LogIdTotalResult;
-import com.logdb2.result.LogRefererResult;
-import com.logdb2.result.LogSourceIpTotalResult;
-import com.logdb2.result.LogTypeTotalResult;
+import com.logdb2.result.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,10 +22,10 @@ public interface LogService {
 
     List<LogIdTotalResult> fiftyMostUpvotedLogsFor(LocalDate date);
 
-    List<Long> blocksInUpvotedLogBy(String username);
+    List<LogBlockIdResult> blocksInUpvotedLogBy(String username);
 
     void createOrUpdate(Log log);
 
-    List<Log> sameEmailDifferentUsernamesUpvotedLogs();
+    List<SameEmailDifferentUsernamesUpvotedLogsResult> sameEmailDifferentUsernamesUpvotedLogs();
 }
 
