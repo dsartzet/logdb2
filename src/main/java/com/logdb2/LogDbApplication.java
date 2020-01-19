@@ -197,8 +197,8 @@ public class LogDbApplication implements CommandLineRunner {
 					dataxceiver.setType(type);
 					dataxceiver.setSourceIp(source_ip);
 					dataxceiver.setSize(size);
-					dataxceiver.setBlockId(Long.parseLong(block_id));
-					dataxceiver.setDestinationIp(destination_ip);
+					dataxceiver.setBlockIds(Long.parseLong(block_id));
+					dataxceiver.setDestinationIps(destination_ip);
 
 					dataxceiver.setUpvoters(new ArrayList<>());
 					logList.add(dataxceiver);
@@ -289,6 +289,8 @@ public class LogDbApplication implements CommandLineRunner {
 
 	private void generateAdminData() {
 		Faker faker = new Faker();
+		Set<String> usernameSet = new HashSet<>();
+		String email = null;
 		Query query = new Query();
 		query.fields().include("_id");
 		List<ObjectId> objectIdList = mongoTemplate.find(query, Log.class)
@@ -299,7 +301,7 @@ public class LogDbApplication implements CommandLineRunner {
 		int requiredSize = dbSize/3 + 1;
 		Random random = new Random();
 
-		for (int i=0; i<1; i++) {
+		for (int i=0; i<2; i++) {
 			Collections.shuffle(objectIdList);
 			int upvoteSum = 0;
 			List<Admin> adminList = new ArrayList<>();
@@ -309,8 +311,21 @@ public class LogDbApplication implements CommandLineRunner {
 				int upvoteSize = random.nextInt(1000) + 1;
 
 				Admin admin = new Admin();
-				admin.setUsername(faker.name().username());
-				admin.setEmail(faker.internet().emailAddress());
+				String username = faker.name().username();
+				while (usernameSet.contains(username)) {
+					username = faker.name().username();
+				}
+				usernameSet.add(username);
+				admin.setUsername(username);
+				if (i>0) {
+					// use the same email to have data (with high probability) for query 10
+					admin.setEmail(email);
+				} else {
+					admin.setEmail(faker.internet().emailAddress());
+				}
+				if (Objects.isNull(email)) {
+					email = admin.getEmail();
+				}
 				admin.setPhoneNumber(faker.phoneNumber().phoneNumber());
 				LocalDateTime localDateTime = LocalDateTime.of(
 						2020, 1, random.nextInt(31) + 1,

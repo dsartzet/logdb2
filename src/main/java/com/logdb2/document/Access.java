@@ -1,12 +1,16 @@
 package com.logdb2.document;
 
+import org.springframework.data.mongodb.core.index.Indexed;
+
 public class Access extends Log {
     private String userId;
+    @Indexed
     private String referer;
+    @Indexed
     private Integer httpMethod;
     private String resource;
     private String userAgent;
-    private int status;
+    private Integer status;
 
     public String getUserId() {
         return userId;
@@ -48,11 +52,11 @@ public class Access extends Log {
         this.userAgent = userAgent;
     }
 
-    public int getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 }

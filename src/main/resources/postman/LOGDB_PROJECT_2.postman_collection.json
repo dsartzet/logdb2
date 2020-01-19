@@ -1,0 +1,643 @@
+{
+	"info": {
+		"_postman_id": "3e4120e9-20d1-4417-99e0-ecfd9b8fdfb8",
+		"name": "LOGDB_PROJECT_2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create",
+			"item": [
+				{
+					"name": "access",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"httpMethod\" : 1,\n    \"resource\" : \"dimitris\",\n    \"userAgent\" : \"Mozilla/5.0 (Windows NT 6.0; rv:34.0) Gecko/20100101 Firefox/34.0\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9090/logs/access",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"logs",
+								"access"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dataxceiver",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"size\" : 1,\n    \"destinationIps\" : \"dimitris\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9090/logs/dataxceiver",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"logs",
+								"dataxceiver"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "namesystem",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"size\" : 1,\n    \"destinationIps\" : [\"dimitris\", \"grigoris\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9090/logs/namesystem",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"logs",
+								"namesystem"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "update",
+			"item": [
+				{
+					"name": "access",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"_id\": \"5e2472b6f54be0300aa40133\",\n\t\"size\" : 1,\n    \"resource\" : \"dimitris\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9090/logs/access",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"logs",
+								"access"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dataxceiver",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"_id\": \"5e2472b6f54be0300aa40133\",\n    \"size\" : 1,\n    \"destinationIps\" : \"dimitris\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9090/logs/dataxceiver",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"logs",
+								"dataxceiver"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "namesystem",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"_id\": \"5e2472b6f54be0300aa40133\",\n    \"size\" : 1,\n    \"destinationIps\" : [\"dimitris\", \"grigoris\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9090/logs/namesystem",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"logs",
+								"namesystem"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "dirtyUpdate",
+			"item": [
+				{
+					"name": "access",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"_id\": \"5e248449f54be03c48705b63\",\n\t\"size\" : 1,\n    \"resource\" : \"dimitris\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9090/dirty/logs/access",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"dirty",
+								"logs",
+								"access"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dataxceiver",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"_id\": \"5e248496f54be03c48a386fd\",\n    \"size\" : 1,\n    \"destinationIps\" : \"dimitris\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9090/dirty/logs/dataxceiver",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"dirty",
+								"logs",
+								"dataxceiver"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "namesystem",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"_id\": \"5e2484bdf54be03c48c478bf\",\n    \"size\" : 1,\n    \"destinationIps\" : [\"dimitris\", \"grigoris\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9090/dirty/logs/namesystem",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"dirty",
+								"logs",
+								"namesystem"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Query 1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/logs/total/per-type/created?start=2015-01-13T00:00:00&stop=2020-01-01T00:00:00",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"logs",
+						"total",
+						"per-type",
+						"created"
+					],
+					"query": [
+						{
+							"key": "start",
+							"value": "2015-01-13T00:00:00"
+						},
+						{
+							"key": "stop",
+							"value": "2020-01-01T00:00:00"
+						}
+					]
+				},
+				"description": "Find the total logs per type that were created within a specified time range and sort them in a descending order. Please note that individual files may log actions of more than one type."
+			},
+			"response": []
+		},
+		{
+			"name": "Query 2",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/requests/total/per-day?start=2016-01-13T00:00:00&stop=2017-01-01T00:00:00&log-type=access",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"requests",
+						"total",
+						"per-day"
+					],
+					"query": [
+						{
+							"key": "start",
+							"value": "2016-01-13T00:00:00"
+						},
+						{
+							"key": "stop",
+							"value": "2017-01-01T00:00:00"
+						},
+						{
+							"key": "log-type",
+							"value": "access"
+						}
+					]
+				},
+				"description": "Find the number of total requests per day for a specific log type and time range."
+			},
+			"response": []
+		},
+		{
+			"name": "Query 3",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/logs/three-most-common/per-source-ip?date=2015-12-12",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"logs",
+						"three-most-common",
+						"per-source-ip"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "2015-12-12"
+						}
+					]
+				},
+				"description": "Find the three most common logs per source IP for a specific day."
+			},
+			"response": []
+		},
+		{
+			"name": "Query 4",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/http-methods/two-least-common?start=2015-01-13T00:00:00&stop=2020-01-01T00:00:00",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"http-methods",
+						"two-least-common"
+					],
+					"query": [
+						{
+							"key": "start",
+							"value": "2015-01-13T00:00:00"
+						},
+						{
+							"key": "stop",
+							"value": "2020-01-01T00:00:00"
+						}
+					]
+				},
+				"description": "Find the two least common HTTP methods with regards to a given time range."
+			},
+			"response": []
+		},
+		{
+			"name": "Query 5",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/referers/with-resources",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"referers",
+						"with-resources"
+					]
+				},
+				"description": "Find the referrers (if any) that have led to more than one resources."
+			},
+			"response": []
+		},
+		{
+			"name": "Query 7",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/logs/fifty-most-upvoted?date=2020-01-01",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"logs",
+						"fifty-most-upvoted"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "2020-01-01"
+						}
+					]
+				},
+				"description": "Find the fifty most upvoted logs for a specific day."
+			},
+			"response": []
+		},
+		{
+			"name": "Query 8",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/admins/fifty-most-active",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"admins",
+						"fifty-most-active"
+					]
+				},
+				"description": "Find the fifty most active administrators, with regard to the total number of upvotes."
+			},
+			"response": []
+		},
+		{
+			"name": "Query 9",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/admins/most-upvotes-ips/top-fifty",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"admins",
+						"most-upvotes-ips",
+						"top-fifty"
+					]
+				},
+				"description": "Find the top fifty administrators, with regard to the total number of source IPs for which they have upvoted logs."
+			},
+			"response": []
+		},
+		{
+			"name": "Query 10",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/logs/same-email-different-usernames-logs",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"logs",
+						"same-email-different-usernames-logs"
+					]
+				},
+				"description": "Find all logs for which the same e-mail has been used for more than one usernames when casting an upvote."
+			},
+			"response": []
+		},
+		{
+			"name": "Query 11",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/blocks/in-upvoted-logs?username=garth.connelly",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"blocks",
+						"in-upvoted-logs"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "garth.connelly"
+						}
+					]
+				},
+				"description": "Find all the block ids for which a given name has casted a vote for a log involving it."
+			},
+			"response": []
+		},
+		{
+			"name": "upvote",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/admins/5e2485eff54be03c48c4e930/upvote/5e248449f54be03c48705b5f",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"admins",
+						"5e2485eff54be03c48c4e930",
+						"upvote",
+						"5e248449f54be03c48705b5f"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

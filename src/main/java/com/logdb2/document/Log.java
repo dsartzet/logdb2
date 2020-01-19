@@ -2,6 +2,7 @@ package com.logdb2.document;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,9 @@ public class Log {
     @Id
     private ObjectId _id;
 
+    @Indexed
     private LocalDateTime timestamp;
+    @Indexed
     private String type;
     private Long size;
     private String sourceIp;

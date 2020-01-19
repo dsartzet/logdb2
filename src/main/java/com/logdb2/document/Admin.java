@@ -2,6 +2,7 @@ package com.logdb2.document;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -11,10 +12,13 @@ import java.util.List;
 public class Admin {
     @Id
     private ObjectId _id;
-
+    @Indexed
     private String username;
+    @Indexed
     private String email;
+    @Indexed
     private String phoneNumber;
+    @Indexed
     private LocalDateTime timestamp;
     private List<Upvote> upvotes;
 

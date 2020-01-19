@@ -1,11 +1,11 @@
 package com.logdb2.result;
 
-import java.util.List;
+import java.util.Set;
 
 public class SameEmailDifferentUsernamesUpvotedLogsResult {
     private String _id;
     private String email;
-    private List<String> usernames;
+    private Set<String> usernames;
 
     public String get_id() {
         return _id;
@@ -23,11 +23,11 @@ public class SameEmailDifferentUsernamesUpvotedLogsResult {
         this.email = email;
     }
 
-    public List<String> getUsernames() {
+    public Set<String> getUsernames() {
         return usernames;
     }
 
-    public void setUsernames(List<String> usernames) {
+    public void setUsernames(Set<String> usernames) {
         this.usernames = usernames;
     }
 }

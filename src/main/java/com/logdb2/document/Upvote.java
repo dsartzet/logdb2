@@ -1,9 +1,12 @@
 package com.logdb2.document;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 public class Upvote {
+    @Indexed
     private ObjectId log;
+    @Indexed
     private String sourceIp;
 
     public Upvote(ObjectId log, String sourceIp) {

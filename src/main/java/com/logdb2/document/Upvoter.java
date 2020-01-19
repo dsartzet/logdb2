@@ -1,7 +1,12 @@
 package com.logdb2.document;
 
-public class Upvoter {
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 
+@CompoundIndexes({
+        @CompoundIndex(def = "{'username' : 1, 'email': 1}")
+})
+public class Upvoter {
     private String username;
     private String email;
 

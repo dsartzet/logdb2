@@ -24,7 +24,9 @@ public interface LogService {
 
     List<LogBlockIdResult> blocksInUpvotedLogBy(String username);
 
-    void createOrUpdate(Log log);
+    Log createOrUpdate(Log log);
+
+    Log createOrUpdateDirtyOnly(Log log);
 
     List<SameEmailDifferentUsernamesUpvotedLogsResult> sameEmailDifferentUsernamesUpvotedLogs();
 }

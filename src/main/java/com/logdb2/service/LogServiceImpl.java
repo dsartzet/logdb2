@@ -1,10 +1,19 @@
 package com.logdb2.service;
 
-
+import com.logdb2.document.Access;
+import com.logdb2.document.Dataxceiver;
 import com.logdb2.document.HttpMethodEnum;
 import com.logdb2.document.Log;
+import com.logdb2.document.Namesystem;
 import com.logdb2.repository.LogRepository;
-import com.logdb2.result.*;
+import com.logdb2.result.LogBlockIdResult;
+import com.logdb2.result.LogDateTotalResult;
+import com.logdb2.result.LogHttpMethodResult;
+import com.logdb2.result.LogIdTotalResult;
+import com.logdb2.result.LogRefererResult;
+import com.logdb2.result.LogSourceIpTotalResult;
+import com.logdb2.result.LogTypeTotalResult;
+import com.logdb2.result.SameEmailDifferentUsernamesUpvotedLogsResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -19,6 +28,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
@@ -142,7 +152,7 @@ public class LogServiceImpl implements LogService {
                                 .gte(LocalDateTime.of(date, LocalTime.MIDNIGHT))
                                 .lt(LocalDateTime.of(date, LocalTime.MAX))),
                 unwind("upvotes"),
-                group("upvotes").count().as("total"),
+                group("upvotes.log").count().as("total"),
                 project("total").and("upvotes").previousOperation(),
                 sort(Sort.Direction.DESC, "total"),
                 limit(50)
@@ -167,17 +177,73 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public void createOrUpdate(Log log) {
-        logRepository.save(log);
+    public Log createOrUpdate(Log log) {
+        return logRepository.save(log);
+    }
+
+    @Override
+    public Log createOrUpdateDirtyOnly(Log log) {
+        Optional<Log> logOptional = logRepository.findById(log.get_id());
+        if (logOptional.isPresent()) {
+            Log logRepo = logOptional.get();
+            LocalDateTime timestamp = log.getTimestamp();
+            String type = log.getType();
+            Long size = log.getSize();
+            String sourceIp = log.getSourceIp();
+            if (timestamp != null) logRepo.setTimestamp(timestamp);
+            if (type != null) logRepo.setType(type);
+            if (size != null) logRepo.setSize(size);
+            if (sourceIp != null) logRepo.setSourceIp(sourceIp);
+            if (log instanceof Access && logRepo instanceof Access) {
+                String userId = ((Access) log).getUserId();
+                String referer = ((Access) log).getReferer();
+                Integer httpMethod = ((Access) log).getHttpMethod();
+                String resource = ((Access) log).getResource();
+                String userAgent = ((Access) log).getUserAgent();
+                Integer status = ((Access) log).getStatus();
+                if (userId != null) ((Access) logRepo).setUserId(userId);
+                if (referer != null) ((Access) logRepo).setReferer(referer);
+                if (httpMethod != null) ((Access) logRepo).setHttpMethod(httpMethod);
+                if (resource != null) ((Access) logRepo).setResource(resource);
+                if (userAgent != null) ((Access) logRepo).setUserAgent(userAgent);
+                if (status != null) ((Access) logRepo).setStatus(status);
+            } else if (log instanceof Dataxceiver && logRepo instanceof Dataxceiver) {
+                Long blockIds = ((Dataxceiver) log).getBlockIds();
+                String destinationIps = ((Dataxceiver) log).getDestinationIps();
+                if (blockIds != null) ((Dataxceiver) logRepo).setBlockIds(blockIds);
+                if (destinationIps != null) ((Dataxceiver) logRepo).setDestinationIps(destinationIps);
+            } else if (log instanceof Namesystem && logRepo instanceof Namesystem){
+                List<Long> blockIds = ((Namesystem) log).getBlockIds();
+                List<String> destinationIps = ((Namesystem) log).getDestinationIps();
+                if (blockIds != null) {
+                    List<Long> blockIdsRepo = ((Namesystem) logRepo).getBlockIds();
+                    blockIdsRepo.addAll(blockIds);
+                    ((Namesystem) logRepo).setBlockIds(blockIdsRepo);
+                }
+                if (destinationIps != null) {
+                    List<String> destinationIpsRepo = ((Namesystem) logRepo).getDestinationIps();
+                    destinationIpsRepo.addAll(destinationIps);
+                    ((Namesystem) logRepo).setDestinationIps(destinationIpsRepo);
+                }
+            } else {
+                return null;
+            }
+            return logRepository.save(logRepo);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public List<SameEmailDifferentUsernamesUpvotedLogsResult> sameEmailDifferentUsernamesUpvotedLogs() {
         Aggregation agg = newAggregation(
                 unwind("upvoters"),
-                project("_id").and("upvoters.email").as("email").and("upvoters.username").as("username"),
+                project("_id").and("upvoters.username").as("username").and("upvoters.email").as("email"),
                         group(Fields.fields("email","_id")).addToSet("username").as("usernames"),
-                        project("_id").and("email").as("email").and("usernames").size().as("size"),
+                        project("_id")
+                                .and("email").as("email")
+                                .and("usernames").as("usernames")
+                                .and("usernames").size().as("size"),
                         match(Criteria.where("size").gte(2))).withOptions(AGGREGATION_OPTIONS);
 
         AggregationResults<SameEmailDifferentUsernamesUpvotedLogsResult> groupResults

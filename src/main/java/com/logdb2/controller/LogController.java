@@ -2,19 +2,31 @@ package com.logdb2.controller;
 
 import com.logdb2.document.Access;
 import com.logdb2.document.Dataxceiver;
+import com.logdb2.document.Log;
 import com.logdb2.document.Namesystem;
-import com.logdb2.result.*;
+import com.logdb2.result.LogBlockIdResult;
+import com.logdb2.result.LogDateTotalResult;
+import com.logdb2.result.LogIdTotalResult;
+import com.logdb2.result.LogRefererResult;
+import com.logdb2.result.LogSourceIpTotalResult;
+import com.logdb2.result.LogTypeTotalResult;
+import com.logdb2.result.SameEmailDifferentUsernamesUpvotedLogsResult;
 import com.logdb2.service.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Controller
+@RestController
 public class LogController {
 
     @Autowired
@@ -113,10 +125,9 @@ public class LogController {
         return  logService.sameEmailDifferentUsernamesUpvotedLogs();
     }
 
-
     /**
-     *     11. Find all the block ids for which a given name has casted
-     *     a vote for a log involving it.
+     * 11. Find all the block ids for which a given name has casted
+     * a vote for a log involving it.
      * e.g. http://localhost:9090/blocks/in-upvoted-logs?username=domingo.greenholt
      */
     @RequestMapping(value = "/blocks/in-upvoted-logs", method = RequestMethod.GET)
@@ -125,23 +136,41 @@ public class LogController {
         return logService.blocksInUpvotedLogBy(username);
     }
 
+    /**
+     * Create or update log.
+     * e.g. http://localhost:9090/logs/access
+     */
+    @PostMapping(value = "/logs/access")
+    Log accessCreateOrUpdate(@RequestBody Access log) {
+        return logService.createOrUpdate(log);
+    }
+
+    @PostMapping(value = "/logs/dataxceiver")
+    Log dataxceiverCreateOrUpdate(@RequestBody Dataxceiver log) {
+        return logService.createOrUpdate(log);
+    }
+
+    @PostMapping(value = "/logs/namesystem")
+    Log namesystemCreateOrUpdate(@RequestBody Namesystem log) {
+        return logService.createOrUpdate(log);
+    }
 
     /**
-     * etc. Create or update log
-     * e.g. http://localhost:9090/logs/access/
-     * */
-    @RequestMapping(value = "/logs/access/", method = RequestMethod.POST)
-    void accessCreateOrUpdate(@RequestBody Access log) {
-        logService.createOrUpdate(log);
+     * Update dirty fields only.
+     * e.g. http://localhost:9090/dirty/logs/access
+     */
+    @PostMapping(value = "/dirty/logs/access")
+    Log accessCreateOrUpdateDirtyOnly(@RequestBody Access log) {
+        return logService.createOrUpdateDirtyOnly(log);
     }
 
-    @RequestMapping(value = "/logs/dataxceiver/", method = RequestMethod.POST)
-    void dataxceiverCreateOrUpdate(@RequestBody Dataxceiver log) {
-        logService.createOrUpdate(log);
+    @PostMapping(value = "/dirty/logs/dataxceiver")
+    Log dataxceiverCreateOrUpdateDirtyOnly(@RequestBody Dataxceiver log) {
+        return logService.createOrUpdateDirtyOnly(log);
     }
 
-    @RequestMapping(value = "/logs/namesystem/", method = RequestMethod.POST)
-    void namesystemCreateOrUpdate(@RequestBody Namesystem log) {
-        logService.createOrUpdate(log);
+    @PostMapping(value = "/dirty/logs/namesystem")
+    Log namesystemCreateOrUpdateDirtyOnly(@RequestBody Namesystem log) {
+        return logService.createOrUpdateDirtyOnly(log);
     }
 }

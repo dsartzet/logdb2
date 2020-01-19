@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.stereotype.Component;
 
 import javax.xml.bind.ValidationException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -43,12 +44,13 @@ public class AdminServiceImpl implements AdminService {
         Optional<Admin> adminOptional= adminRepository.findById(adminId);
         if(adminOptional.isPresent()) {
             Admin admin = adminOptional.get();
-            List<Upvote> upvotes = admin.getUpvotes();
+            List<Upvote> upvotes = admin.getUpvotes() != null ? admin.getUpvotes() : new ArrayList<>();
             if (upvotes.stream().map(Upvote::getLog).collect(Collectors.toList()).contains(logId)) {
                 throw new ValidationException("Can not upvote same log multiple times.");
             }
             Log log = logRepository.findById(logId).get();
             upvotes.add(new Upvote(logId, log.getSourceIp()));
+            if (log.getUpvoters() == null) log.setUpvoters(new ArrayList<>());
             log.getUpvoters().add(new Upvoter(admin.getUsername(), admin.getEmail()));
             admin.setUpvotes(upvotes);
             adminRepository.save(admin);

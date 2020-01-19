@@ -1,22 +1,25 @@
 package com.logdb2.document;
 
+import org.springframework.data.mongodb.core.index.Indexed;
+
 public class Dataxceiver extends Log {
-    private Long blockId;
-    private String destinationIp;
+    @Indexed
+    private Long blockIds;
+    private String destinationIps;
 
-    public Long getBlockId() {
-        return blockId;
+    public Long getBlockIds() {
+        return blockIds;
     }
 
-    public void setBlockId(Long blockId) {
-        this.blockId = blockId;
+    public void setBlockIds(Long blockIds) {
+        this.blockIds = blockIds;
     }
 
-    public String getDestinationIp() {
-        return destinationIp;
+    public String getDestinationIps() {
+        return destinationIps;
     }
 
-    public void setDestinationIp(String destinationIp) {
-        this.destinationIp = destinationIp;
+    public void setDestinationIps(String destinationIps) {
+        this.destinationIps = destinationIps;
     }
 }
