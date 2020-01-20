@@ -5,6 +5,7 @@ import com.logdb2.document.Dataxceiver;
 import com.logdb2.document.HttpMethodEnum;
 import com.logdb2.document.Log;
 import com.logdb2.document.Namesystem;
+import com.logdb2.document.TypeEnum;
 import com.logdb2.repository.LogRepository;
 import com.logdb2.result.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,7 @@ public class LogServiceImpl implements LogService {
     public List<LogDateTotalResult> totalRequestsPerDayForTypeAndTimeRange(String logType, LocalDateTime start, LocalDateTime stop) {
         Aggregation agg = newAggregation(
                 match(new Criteria().andOperator(
-                        Criteria.where("type").is(logType),
+                        Criteria.where("type").is(TypeEnum.valueOf(logType.toUpperCase()).getValue()),
                         Criteria.where("timestamp").gte(start).lt(stop))),
                 group("timestamp").count().as("total"),
                 project("total").and("timestamp").previousOperation(),
@@ -140,15 +141,15 @@ public class LogServiceImpl implements LogService {
                   project("blockIds").and("type").as("type").
                           andExpression("year(timestamp)").as("year").
                         andExpression("month(timestamp)").as("month").
-                          andExpression("day(timestamp)").as("day"),
-                            match(new Criteria().orOperator(Criteria.where("type").is("served"),
-                                    Criteria.where("type").is("replicate"))),
+                          andExpression("dayOfMonth(timestamp)").as("day"),
+                            match(new Criteria().orOperator(Criteria.where("type").is(TypeEnum.valueOf("served".toUpperCase()).getValue()),
+                                    Criteria.where("type").is(TypeEnum.valueOf("replicate".toUpperCase()).getValue()))),
                   group(Fields.fields("blockIds","year", "month", "day")).addToSet("type").as("types"),
                   match(Criteria.where("types").size(2))
         ).withOptions(AGGREGATION_OPTIONS);
 
         AggregationResults<BlocksSameDayReplicateAndServedResult> groupResults
-                = mongoTemplate.aggregate(agg, ADMIN_COLLECTION_NAME, BlocksSameDayReplicateAndServedResult.class);
+                = mongoTemplate.aggregate(agg, LOGS_COLLECTION_NAME, BlocksSameDayReplicateAndServedResult.class);
         return groupResults.getMappedResults();
     }
 
@@ -194,7 +195,7 @@ public class LogServiceImpl implements LogService {
         if (logOptional.isPresent()) {
             Log logRepo = logOptional.get();
             LocalDateTime timestamp = log.getTimestamp();
-            String type = log.getType();
+            Integer type = log.getType();
             Long size = log.getSize();
             String sourceIp = log.getSourceIp();
             if (timestamp != null) logRepo.setTimestamp(timestamp);

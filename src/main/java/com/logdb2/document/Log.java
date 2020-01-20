@@ -16,7 +16,7 @@ public class Log {
     @Indexed
     private LocalDateTime timestamp;
     @Indexed
-    private String type;
+    private Integer type;
     private Long size;
     private String sourceIp;
     private List<Upvoter> upvoters;
@@ -37,11 +37,11 @@ public class Log {
         this.timestamp = timestamp;
     }
 
-    public String getType() {
+    public Integer getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(Integer type) {
         this.type = type;
     }
 

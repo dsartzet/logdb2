@@ -117,7 +117,7 @@ public class LogDbApplication implements CommandLineRunner {
 					access.setSize(size);
 					access.setReferer(referer);
 					access.setUserAgent(userAgent);
-					access.setType("access");
+					access.setType(TypeEnum.valueOf("access".toUpperCase()).getValue());
 
 					access.setUpvoters(new ArrayList<>());
 					logList.add(access);
@@ -194,7 +194,7 @@ public class LogDbApplication implements CommandLineRunner {
 				if (timestamp != null) {
 					Dataxceiver dataxceiver = new Dataxceiver();
 					dataxceiver.setTimestamp(toLocalDateTimeFromHDFS(timestamp));
-					dataxceiver.setType(type);
+					dataxceiver.setType(TypeEnum.valueOf(type.toUpperCase()).getValue());
 					dataxceiver.setSourceIp(source_ip);
 					dataxceiver.setSize(size);
 					dataxceiver.setBlockIds(Long.parseLong(block_id));
@@ -265,7 +265,7 @@ public class LogDbApplication implements CommandLineRunner {
 				}
 				Namesystem namesystemDocument = new Namesystem();
 				namesystemDocument.setTimestamp(toLocalDateTimeFromHDFS(timestamp));
-				namesystemDocument.setType(type);
+				namesystemDocument.setType(type != null ? TypeEnum.valueOf(type.toUpperCase()).getValue() : null);
 				namesystemDocument.setSourceIp(source_ip);
 				namesystemDocument.setSize(size);
 				namesystemDocument.setBlockIds(block_id_list.stream().map(Long::parseLong).collect(Collectors.toList()));

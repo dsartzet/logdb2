@@ -3,19 +3,11 @@ package com.logdb2.result;
 import java.util.List;
 
 public class BlocksSameDayReplicateAndServedResult {
-    private List<String> types;
     private Long blockIds;
     private Integer year;
     private Integer month;
     private Integer day;
-
-    public List<String> getTypes() {
-        return types;
-    }
-
-    public void setTypes(List<String> types) {
-        this.types = types;
-    }
+    private List<Integer> types;
 
     public Long getBlockIds() {
         return blockIds;
@@ -47,5 +39,13 @@ public class BlocksSameDayReplicateAndServedResult {
 
     public void setDay(Integer day) {
         this.day = day;
+    }
+
+    public List<Integer> getTypes() {
+        return types;
+    }
+
+    public void setTypes(List<Integer> types) {
+        this.types = types;
     }
 }

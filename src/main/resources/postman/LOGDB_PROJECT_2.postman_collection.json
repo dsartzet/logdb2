@@ -500,6 +500,27 @@
 			"response": []
 		},
 		{
+			"name": "Query 6",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/blocks/replicated-served-same-day",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"blocks",
+						"replicated-served-same-day"
+					]
+				},
+				"description": "Find the blocks that have been replicated the same day that they have also been served."
+			},
+			"response": []
+		},
+		{
 			"name": "Query 7",
 			"request": {
 				"method": "GET",
