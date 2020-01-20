@@ -47,6 +47,8 @@ public class AdminServiceImpl implements AdminService {
             List<Upvote> upvotes = admin.getUpvotes() != null ? admin.getUpvotes() : new ArrayList<>();
             if (upvotes.stream().map(Upvote::getLog).collect(Collectors.toList()).contains(logId)) {
                 throw new ValidationException("Can not upvote same log multiple times.");
+            } else if (upvotes.size() >= 1000) {
+                throw new ValidationException("Can not upvote more than 1000 times.");
             }
             Log log = logRepository.findById(logId).get();
             upvotes.add(new Upvote(logId, log.getSourceIp()));
