@@ -9,6 +9,8 @@ public enum TypeEnum {
     DELETE(5);
 
     private final int value;
+    // making sure TypeEnum.values() gets called once.
+    private static final TypeEnum[] values = TypeEnum.values();
 
     TypeEnum(int value) {
         this.value = value;
@@ -16,5 +18,9 @@ public enum TypeEnum {
 
     public int getValue() {
         return value;
+    }
+
+    public static TypeEnum[] getValues() {
+        return values;
     }
 }

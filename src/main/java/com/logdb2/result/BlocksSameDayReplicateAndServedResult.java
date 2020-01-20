@@ -1,6 +1,9 @@
 package com.logdb2.result;
 
+import com.logdb2.document.TypeEnum;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BlocksSameDayReplicateAndServedResult {
     private Long blockIds;
@@ -41,8 +44,10 @@ public class BlocksSameDayReplicateAndServedResult {
         this.day = day;
     }
 
-    public List<Integer> getTypes() {
-        return types;
+    public List<String> getTypes() {
+        return types.stream()
+                .map(type -> TypeEnum.getValues()[type].name().toLowerCase())
+                .collect(Collectors.toList());
     }
 
     public void setTypes(List<Integer> types) {
