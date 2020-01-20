@@ -290,7 +290,6 @@ public class LogDbApplication implements CommandLineRunner {
 	private void generateAdminData() {
 		Faker faker = new Faker();
 		Set<String> usernameSet = new HashSet<>();
-		String email = null;
 		Query query = new Query();
 		query.fields().include("_id");
 		List<ObjectId> objectIdList = mongoTemplate.find(query, Log.class)
@@ -301,7 +300,7 @@ public class LogDbApplication implements CommandLineRunner {
 		int requiredSize = dbSize/3 + 1;
 		Random random = new Random();
 
-		for (int i=0; i<2; i++) {
+		for (int i=0; i<1; i++) {
 			Collections.shuffle(objectIdList);
 			int upvoteSum = 0;
 			List<Admin> adminList = new ArrayList<>();
@@ -317,15 +316,7 @@ public class LogDbApplication implements CommandLineRunner {
 				}
 				usernameSet.add(username);
 				admin.setUsername(username);
-				if (i>0) {
-					// use the same email to have data (with high probability) for query 10
-					admin.setEmail(email);
-				} else {
-					admin.setEmail(faker.internet().emailAddress());
-				}
-				if (Objects.isNull(email)) {
-					email = admin.getEmail();
-				}
+				admin.setEmail(faker.internet().emailAddress());
 				admin.setPhoneNumber(faker.phoneNumber().phoneNumber());
 				LocalDateTime localDateTime = LocalDateTime.of(
 						2020, 1, random.nextInt(31) + 1,
@@ -350,6 +341,24 @@ public class LogDbApplication implements CommandLineRunner {
 				if (upvoteSum > requiredSize) {
 					break;
 				}
+			}
+			// adding one more admin with an existing email for query 10 results
+			Admin admin = new Admin();
+			Admin firstAdmin = adminList.get(0);
+			List<Upvote> firstAdminUpvotes = firstAdmin.getUpvotes();
+			String username = faker.name().username();
+			while (usernameSet.contains(username)) {
+				username = faker.name().username();
+			}
+			usernameSet.add(username);
+			admin.setUsername(username);
+			admin.setEmail(firstAdmin.getEmail());
+			admin.setPhoneNumber(faker.phoneNumber().phoneNumber());
+			admin.setTimestamp(admin.getTimestamp());
+			admin.setUpvotes(firstAdmin.getUpvotes());
+			adminList.add(admin);
+			for (Upvote upvote : firstAdminUpvotes) {
+				logMap.get(upvote.getLog()).getUpvoters().add(new Upvoter(admin.getUsername(), admin.getEmail()));
 			}
 			adminRepository.saveAll(adminList);
 			logRepository.saveAll(logMap.values());
