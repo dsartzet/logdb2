@@ -18,7 +18,7 @@ public interface LogService {
 
     List<LogRefererResult> referersWithResources();
 
-    List<LogBlockIdResult> blocksReplicatedAndServedSameDay();
+    List<BlocksSameDayReplicateAndServedResult> blocksReplicatedAndServedSameDay();
 
     List<LogIdTotalResult> fiftyMostUpvotedLogsFor(LocalDate date);
 

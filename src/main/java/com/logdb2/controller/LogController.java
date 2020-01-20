@@ -4,13 +4,7 @@ import com.logdb2.document.Access;
 import com.logdb2.document.Dataxceiver;
 import com.logdb2.document.Log;
 import com.logdb2.document.Namesystem;
-import com.logdb2.result.LogBlockIdResult;
-import com.logdb2.result.LogDateTotalResult;
-import com.logdb2.result.LogIdTotalResult;
-import com.logdb2.result.LogRefererResult;
-import com.logdb2.result.LogSourceIpTotalResult;
-import com.logdb2.result.LogTypeTotalResult;
-import com.logdb2.result.SameEmailDifferentUsernamesUpvotedLogsResult;
+import com.logdb2.result.*;
 import com.logdb2.service.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -99,7 +93,7 @@ public class LogController {
      */
     @RequestMapping(value = "/blocks/replicated-served-same-day", method = RequestMethod.GET)
     @ResponseBody
-    List<LogBlockIdResult> blocksReplicatedAndServedSameDay() {
+    List<BlocksSameDayReplicateAndServedResult> blocksReplicatedAndServedSameDay() {
         return logService.blocksReplicatedAndServedSameDay();
     }
 

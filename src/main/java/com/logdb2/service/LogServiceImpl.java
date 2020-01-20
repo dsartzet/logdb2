@@ -6,14 +6,7 @@ import com.logdb2.document.HttpMethodEnum;
 import com.logdb2.document.Log;
 import com.logdb2.document.Namesystem;
 import com.logdb2.repository.LogRepository;
-import com.logdb2.result.LogBlockIdResult;
-import com.logdb2.result.LogDateTotalResult;
-import com.logdb2.result.LogHttpMethodResult;
-import com.logdb2.result.LogIdTotalResult;
-import com.logdb2.result.LogRefererResult;
-import com.logdb2.result.LogSourceIpTotalResult;
-import com.logdb2.result.LogTypeTotalResult;
-import com.logdb2.result.SameEmailDifferentUsernamesUpvotedLogsResult;
+import com.logdb2.result.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -141,8 +134,22 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public List<LogBlockIdResult> blocksReplicatedAndServedSameDay() {
-        return null;
+    public List<BlocksSameDayReplicateAndServedResult> blocksReplicatedAndServedSameDay() {
+          Aggregation agg = newAggregation(
+                unwind("blockIds", true),
+                  project("blockIds").and("type").as("type").
+                          andExpression("year(timestamp)").as("year").
+                        andExpression("month(timestamp)").as("month").
+                          andExpression("day(timestamp)").as("day"),
+                            match(new Criteria().orOperator(Criteria.where("type").is("served"),
+                                    Criteria.where("type").is("replicate"))),
+                  group(Fields.fields("blockIds","year", "month", "day")).addToSet("type").as("types"),
+                  match(Criteria.where("types").size(2))
+        ).withOptions(AGGREGATION_OPTIONS);
+
+        AggregationResults<BlocksSameDayReplicateAndServedResult> groupResults
+                = mongoTemplate.aggregate(agg, ADMIN_COLLECTION_NAME, BlocksSameDayReplicateAndServedResult.class);
+        return groupResults.getMappedResults();
     }
 
     @Override
