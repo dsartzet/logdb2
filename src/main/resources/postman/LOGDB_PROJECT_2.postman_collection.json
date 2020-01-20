@@ -172,7 +172,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"_id\": \"5e2472b6f54be0300aa40133\",\n    \"size\" : 1,\n    \"destinationIps\" : \"dimitris\"\n}",
+							"raw": "{\n\t\"_id\": \"5e2581c20291de204914d236\",\n    \"size\" : 1,\n    \"destinationIps\" : \"dimitris\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -324,7 +324,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"_id\": \"5e2484bdf54be03c48c478bf\",\n    \"size\" : 1,\n    \"destinationIps\" : [\"dimitris\", \"grigoris\"]\n}",
+							"raw": "{\n\t\"_id\": \"5e2582030291de204935c3f8\",\n    \"sourceIp\" : \"IP\",\n    \"destinationIps\" : [\"dimitris\", \"grigoris\"]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -617,7 +617,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:9090/blocks/in-upvoted-logs?username=garth.connelly",
+					"raw": "http://localhost:9090/blocks/in-upvoted-logs?username=reginia.bayer",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -630,7 +630,7 @@
 					"query": [
 						{
 							"key": "username",
-							"value": "garth.connelly"
+							"value": "reginia.bayer"
 						}
 					]
 				},
@@ -644,7 +644,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:9090/admins/5e2485eff54be03c48c4e930/upvote/5e248449f54be03c48705b5f",
+					"raw": "http://localhost:9090/admins/5e25834f0291de2049363469/upvote/5e248449f54be03c48705b5f",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -652,7 +652,7 @@
 					"port": "9090",
 					"path": [
 						"admins",
-						"5e2485eff54be03c48c4e930",
+						"5e25834f0291de2049363469",
 						"upvote",
 						"5e248449f54be03c48705b5f"
 					]

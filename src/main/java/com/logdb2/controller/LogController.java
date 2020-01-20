@@ -97,7 +97,6 @@ public class LogController {
         return logService.blocksReplicatedAndServedSameDay();
     }
 
-
     /**
      * 7. Find the fifty most upvoted logs for a specific day.
      * e.g. http://localhost:9090/logs/fifty-most-upvoted?date=2020-01-01
